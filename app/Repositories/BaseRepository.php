@@ -58,12 +58,34 @@ abstract class BaseRepository
         return $query->get($columns);
     }
 
+    public function allQuery($search = [], $skip = null, $limit = null)
+    {
+        $query = $this->model->newQuery();
+
+        if (count($search)) {
+            foreach($search as $key => $value) {
+                if (in_array($key, $this->getFieldsSearchable())) {
+                    $query->where($key, $value);
+                }
+            }
+        }
+
+        if (!is_null($skip)) {
+            $query->skip($skip);
+        }
+
+        if (!is_null($limit)) {
+            $query->limit($limit);
+        }
+
+        return $query;
+    }
+
     /**
      * Create model record
      */
     public function create(array $input)
     {
-
         $model = $this->model->newInstance($input);
 
         $model->save();

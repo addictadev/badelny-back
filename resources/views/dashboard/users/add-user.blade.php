@@ -27,62 +27,21 @@
                             @endif
                             <div class="row">
                                 <div class="form-group row">
-                                <div class="col-sm-6">
-                                    <nav>
-                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">English</button>
-                                            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">عربى</button>
-                                        </div>
-                                    </nav>
-                                    <br>
+                                <div class="col-md-10">
+                                    <div class="row col-12 form-group">
 
-                                    <div class="tab-content" id="nav-tabContent" >
-                                        <div class=" col-sm-10 tab-pane fade show active " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                                            <label for="name_en">Name <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control " name="name_en"  value="{{isset($user) ? $user->name_en : ''}}"  placeholder="Name" required>
-                                            @if ($errors->has('name_en'))
-                                                <p class="text-danger"> {{ $errors->first('name_en') }} </p>
+                                        <label class="col-sm-4">
+                                            {{trans('dashboard.Name')}} *
+                                        </label>
+
+                                        <div class="col-sm-8">
+                                            <input type="text" name="name" required value="{{isset($user) ? $user->name : ''}}" placeholder=" " class="form-control">
+                                            @if($errors->has('name'))
+                                                <div class="alert alert-danger">{{ $errors->first('name') }}</div>
                                             @endif
-
-                                            <label for="area_en">Area <span class="text-danger"></span></label>
-                                            <input type="text" class="form-control " name="area_en"  value="{{isset($user) ? $user->area_en : ''}}"  placeholder="Area" >
-                                            @if ($errors->has('area_en'))
-                                                <p class="text-danger"> {{ $errors->first('area_en') }} </p>
-                                            @endif
-
-                                            <label for="description_en">Address</label>
-                                            <input type="text" class="form-control " name="address_en"  value="{{isset($user) ? $user->address_en : ''}}"  placeholder="Address" >
-                                            @if ($errors->has('address_en'))
-                                                <p class="text-danger"> {{ $errors->first('address_en') }} </p>
-                                            @endif
-
-
                                         </div>
 
-                                        <div class="col-sm-10 tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-home-tab">
-                                            <label for="name_ar">الاسم<span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control " name="name_ar"  value="{{isset($user) ? $user->name_ar : ''}}"  placeholder="الاسم" required>
-                                            @if ($errors->has('name_ar'))
-                                                <p class="text-danger"> {{ $errors->first('name_ar') }} </p>
-                                            @endif
-
-                                            <label for="area_ar">المنطقة<span class="text-danger"></span></label>
-                                            <input type="text" class="form-control " name="area_ar"  value="{{isset($user) ? $user->area_ar : ''}}"  placeholder="المنطقة">
-                                            @if ($errors->has('area_ar'))
-                                                <p class="text-danger"> {{ $errors->first('area_ar') }} </p>
-                                            @endif
-
-                                            <label for="description_en">العنوان</label>
-                                            <input type="text" class="form-control " name="address_ar"  value="{{isset($user) ? $user->address_ar : ''}}"  placeholder="العنوان" >
-                                            @if ($errors->has('address_ar'))
-                                                <p class="text-danger"> {{ $errors->first('address_ar') }} </p>
-                                            @endif
-
-
-                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
                                 <div class="row col-12 form-group">
 
                                     <label class="col-sm-4">
@@ -100,17 +59,31 @@
                                 <div class="row col-12 form-group">
 
                                     <label class="col-sm-4">
-                                        {{trans('dashboard.phone')}} *
+                                        {{trans('dashboard.phone')}}
                                     </label>
 
                                     <div class="col-sm-8">
-                                        <input type="number" required name="phone" value="{{isset($user) ? $user->phone : ''}}" placeholder=" " class="form-control">
+                                        <input type="number" name="phone" value="{{isset($user) ? $user->phone : ''}}" placeholder=" " class="form-control">
                                         @if($errors->has('phone'))
                                             <div class="alert alert-danger">{{ $errors->first('phone') }}</div>
                                         @endif
                                     </div>
 
                                 </div>
+                                    <div class="row col-12 form-group">
+
+                                        <label class="col-sm-4">
+                                            {{trans('dashboard.birthDate')}}
+                                        </label>
+
+                                        <div class="col-sm-8">
+                                            <input type="date" name="date_of_birth" value="{{isset($user) ? $user->date_of_birth : ''}}" placeholder=" " class="form-control">
+                                            @if($errors->has('date_of_birth'))
+                                                <div class="alert alert-danger">{{ $errors->first('date_of_birth') }}</div>
+                                            @endif
+                                        </div>
+
+                                    </div>
                                 @if(!isset($user))
                                 <div class="row col-12 form-group">
                                     <label class="col-sm-4">
@@ -133,8 +106,8 @@
 
                                     <div class="col-sm-8">
                                         <select name="gender" class="form-control">
-                                            <option value="m" {{isset($user) && $user->gender = 'm' ? 'selected' : ''}}> {{trans('dashboard.male')}}</option>
-                                            <option value="f" {{isset($user) && $user->gender = 'f' ? 'selected' : ''}}> {{trans('dashboard.female')}}</option>
+                                            <option value="1" {{isset($user) && $user->gender = 'm' ? 'selected' : ''}}> {{trans('dashboard.male')}}</option>
+                                            <option value="2" {{isset($user) && $user->gender = 'f' ? 'selected' : ''}}> {{trans('dashboard.female')}}</option>
                                         </select>
                                          @if($errors->has('gender'))
                                             <div class="alert alert-danger">{{ $errors->first('gender') }}</div>

@@ -178,11 +178,26 @@ return [
     'badelny_login' => 'تسجيل الدخول | بادلني',
     'Has_Parent' => 'هل لديه قسم رئيسي ؟',
     'All_Categories' => 'جميع الاقسام',
+    'All_products' => 'جميع المنتجات',
+    'products' => 'المنتجات',
+    'Approve' => 'الموافقة',
     'Parent' => 'القسم الرئيسي',
     'add' => 'اضافة',
     'Add_User' => 'اضافة عضو',
     'add_category' => 'اضافة قسم',
     'select_category' => 'اختر قسم',
+    'birthDate' => 'تاريخ الميلاد',
+    'Category' => 'القسم',
+    'update status and approve for product' => 'تعديل الحالة والموافقه للمنتج',
+    'publish' => 'مرئي',
+    'un publish' => ' غير مرئي',
+    'points' => 'النقاط',
+    'price' => 'السعر',
+    'product_information' => 'معلومات المنتج',
+    'color' => 'اللون',
+    'weight' => 'الوزن',
+    'status' => 'الحالة',
+
 
 
 

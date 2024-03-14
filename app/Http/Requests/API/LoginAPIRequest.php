@@ -29,7 +29,7 @@ class LoginAPIRequest extends APIRequest
     {
         return [
             'email' => 'required',
-            'password' => 'required|min:8',
+            'password' => 'required',
         ];
     }
 

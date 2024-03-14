@@ -33,13 +33,13 @@ class UserRepository extends BaseRepository
 
     public function loadAjax()
     {
-        $users = $this->user->get();
+        $users = User::get();
         return Datatables::of($users)
             ->rawColumns(['action', 'select', 'status'])
             ->editColumn('#', function ($model) {
             })
             ->editColumn('name', function ($model) {
-                return app()->getLocale() == 'en' ? $model->name_en :  $model->name_ar;
+                return $model->name;
             })
             ->editColumn('email', function ($model) {
 

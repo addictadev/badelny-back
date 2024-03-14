@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\UserAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +20,7 @@ Route::group(['middleware' => ['local_handler']] , function () {
     Route::group(['prefix' => 'user'] , function () {
         Route::get('/splash' , 'UserAPIController@getUserSplash');
         Route::post('/register' , 'UserAPIController@userRegister');
-        Route::post('/login' , 'UserAPIController@login');
+        Route::post('/login' , [UserAPIController::class,'login']);
 
         Route::group(['middleware' => ['auth:api' , 'role:user']] , function () {
             Route::post('/logout' , 'UserAPIController@logout');
@@ -36,3 +37,8 @@ Route::group(['middleware' => ['local_handler']] , function () {
     });
 });
 
+
+
+Route::resource('products', App\Http\Controllers\API\ProductAPIController::class)
+    ->except(['create', 'edit']);
+Route::post('/products/{id}', [App\Http\Controllers\API\ProductAPIController::class,'update'])->name('products.update');

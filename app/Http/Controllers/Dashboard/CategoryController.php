@@ -41,8 +41,11 @@ class CategoryController extends AppBaseController
     {
         $input = $request->all();
 
-        $this->categoryRepository->create($input);
+       $category = $this->categoryRepository->create($input);
 
+        if($request['image'] && $request['image']->isValid()){
+            $category->addMediaFromRequest('image')->toMediaCollection('images');
+        }
         return redirect()->route('categories.index')->with('success',trans('dashboard.Added_Successfully'));
     }
 
@@ -68,7 +71,12 @@ class CategoryController extends AppBaseController
     {
        $this->categoryRepository->find($id);
 
-      $this->categoryRepository->update($request->all(), $id);
+    $category =  $this->categoryRepository->update($request->all(), $id);
+
+        if($request['image'] && $request['image']->isValid()){
+            $category->clearMediaCollection('images');
+            $category->addMediaFromRequest('image')->toMediaCollection('images');
+        }
 
         return redirect()->route('categories.index')->with('success',trans('dashboard.Updated_Successfully'));
     }
@@ -83,7 +91,6 @@ class CategoryController extends AppBaseController
         $this->categoryRepository->find($id);
 
         $this->categoryRepository->delete($id);
-
 
         return redirect()->route('categories.index')->with('success',trans('dashboard.Deleted_Successfully'));
     }

@@ -34,5 +34,14 @@
             </li>
         </ul>
 
+        <li class="nav-item sidebar-nav-item">
+            <a href="#" class="nav-link"><img src="{{asset('offers.png')}}" alt="" width="20px" height="30px" style="margin: 0 10px 0 10px"><span>{{trans('dashboard.products')}}</span></a>
+            <ul class="nav sub-group-menu @if(request()->path() == 'products' || request()->path() == 'ar/products')sub-group-active" @endif">
+        <li class="nav-item">
+            <a href="{{route('products.index')}}" class="nav-link @if(request()->path() == 'products' || request()->path() == 'ar/products')menu-active" @endif><i
+                    class="fas fa-angle-right"></i>{{trans('dashboard.All_products')}}</a>
+        </li>
+        </ul>
+
     </div>
 </div>

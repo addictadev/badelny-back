@@ -33,5 +33,8 @@ Route::group(['prefix' => \LaravelLocalization::setLocale() , 'middleware' => 'a
          // category route
     Route::resource('categories',\App\Http\Controllers\Dashboard\CategoryController::class);
     Route::get('loadCategories', 'App\Http\Controllers\Dashboard\CategoryController@loadAjaxDatatable')->name('categories.ajax');
-});
 
+    // Products Route
+    Route::resource('products',\App\Http\Controllers\Dashboard\ProductController::class);
+    Route::get('loadProducts', 'App\Http\Controllers\Dashboard\ProductController@loadAjaxDatatable')->name('products.ajax');
+});
