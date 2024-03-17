@@ -24,6 +24,15 @@ class User extends Authenticatable
         'date_of_birth',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password', 'remember_token'
+    ];
+
     protected $casts = [
         'name' => 'string',
         'email' => 'string',

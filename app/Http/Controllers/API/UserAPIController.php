@@ -180,6 +180,20 @@ class UserAPIController extends AppBaseController
         }
     }
 
+    public function profile()
+    {
+        try {
+            $user = $this->usersService->getInfo($this->getUser()->id);
+            $response = array(
+                'data' => $user,
+            );
+
+            return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
     public function updateProfile(Request $request)
     {
         try {
