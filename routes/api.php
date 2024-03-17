@@ -19,9 +19,9 @@ Route::group(['middleware' => ['local_handler']] , function () {
 
     Route::group(['prefix' => 'user'] , function () {
         Route::get('/splash' , 'UserAPIController@getUserSplash');
-        Route::post('/register' , 'UserAPIController@userRegister');
+        // Route::post('/register' , 'UserAPIController@userRegister');
         Route::post('/login' , [UserAPIController::class,'login']);
-
+        Route::post('/register' , [UserAPIController::class,'userRegister']); 
         Route::group(['middleware' => ['auth:api' , 'role:user']] , function () {
             Route::post('/logout' , 'UserAPIController@logout');
             Route::post('/update-profile' , 'UserAPIController@updateUserProfile');
