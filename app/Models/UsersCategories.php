@@ -11,4 +11,5 @@ class UsersCategories extends Model
 
     protected $table = 'users_categories';
     protected $guarded = [];
+
 }

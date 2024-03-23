@@ -31,6 +31,7 @@ class MobileVerificationsAPIController extends AppBaseController
 
     /**
      * Display a listing of the MobileVerifications.
+     * Display a listing of the MobileVerifications.
      * GET|HEAD /mobile-verifications
      */
     public function index(Request $request): JsonResponse
@@ -120,16 +121,14 @@ class MobileVerificationsAPIController extends AppBaseController
             $previousMobileVerifications = $this->mobileVerificationsRepository->findByMobileNumber($request->calling_code, $request->phone);
 
             if (count($previousMobileVerifications) > 0) {
-                $this->mobileVerificationsRepository->model()::Where('calling_code', '=', $request->calling_code)->where('phone' , $request->phone)->update(array('expired' => '1'));
+              $rr =  $this->mobileVerificationsRepository->model()::where('phone' , $request->phone)->update(array('expired' => '1'));
             }
-
             // call code processor to generate verification code.
             $code = CodeProcessor::getInstance()->generateCode();
             $this->mobileVerificationsRepository->create(
                 array(
-                    'user_id' => $this->getUser()->id,
-                    'calling_code' => $request->calling_code,
-                    'mobile' => $request->phone,
+                    'is_user' => 1,
+                    'phone' => $request->phone,
                     'code' => $code ,
                     'expired' => 0 ,
                     'expired_at' => Carbon::now()->addMinutes(env('SMS_VERIFICATIONS_CODE_EXPIRE_IN' , 60))
@@ -164,6 +163,22 @@ class MobileVerificationsAPIController extends AppBaseController
                 return $this->sendApiError(__('messages.Mobile_Not_Valid'), 500);
             }
 
+            return $this->sendApiError(__('messages.Code_Not_Valid'), 500);
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function validateVerificationCode()
+    {
+        try {
+            $mobileVerifications = $this->mobileVerificationsRepository->validateByCode(\request('code'));
+            if ($mobileVerifications) {
+                $this->mobileVerificationsRepository->model()::Where('is_verification', '=', 1)->where('phone' , $mobileVerifications->phone)->update(array('expired' => '1'));
+                $data = ['is_user' =>$mobileVerifications->is_user , 'Verification' => true];
+                  return $this->sendApiResponse(array('data' =>$data), 'Mobile Verification successfully.');
+
+            }
             return $this->sendApiError(__('messages.Code_Not_Valid'), 500);
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);

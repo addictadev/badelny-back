@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\API\CreateCategoryAPIRequest;
 use App\Http\Requests\API\UpdateCategoryAPIRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use Illuminate\Http\JsonResponse;
@@ -29,10 +30,11 @@ class CategoryAPIController extends AppBaseController
     public function index(): JsonResponse
     {
         try {
-            $categories = $this->categoryRepository->model()::get();
+            $categories = $this->categoryRepository->all();
 
-            return $this->sendApiResponse(array('data' => $categories), __('messages.update_successfully'));
+            return $this->sendResponse(CategoryResource::collection($categories), 'Categories retrieved successfully');
         } catch (\Exception $e) {
+            dd($e);
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }

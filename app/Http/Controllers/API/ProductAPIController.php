@@ -52,7 +52,7 @@ class ProductAPIController extends AppBaseController
             $product->addMediaFromRequest('image')->toMediaCollection('images');
         }
 
-        return $this->sendResponse($product->toArray(), 'Product saved successfully');
+        return $this->sendResponse(new ProductResource($product), 'Product saved successfully');
     }
 
     /**
@@ -94,7 +94,7 @@ class ProductAPIController extends AppBaseController
             $product->addMediaFromRequest('image')->toMediaCollection('images');
         }
 
-        return $this->sendResponse($product->toArray(), 'Product updated successfully');
+        return $this->sendResponse(new ProductResource($product), 'Product updated successfully');
     }
 
     /**

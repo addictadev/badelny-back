@@ -17,7 +17,7 @@ class RolesUsersSeeder extends Seeder
     public function run()
     {
         $roles = [
-            ['name' => 'super_admin' , 'guard_name' => 'api', 'created_at' => Carbon::now()],
+            ['name' => 'super_admin' , 'guard_name' => 'web', 'created_at' => Carbon::now()],
             ['name' => 'user' , 'guard_name' => 'api', 'created_at' => Carbon::now()],
         ];
         Role::insert($roles);

@@ -29,12 +29,11 @@ class MobileVerificationsRepository extends BaseRepository
 
     public function findByMobileNumber($calling_code, $mobileNumber)
     {
-        return $this->model()::Where('calling_code', '=', $calling_code)->Where('mobile', '=', $mobileNumber)
-            ->where('expired', '=', '0')->where('expired_at', '>=', Carbon::now())->get();
+        return $this->model()::Where('phone', '=', $mobileNumber)->where('expired_at', '>=', Carbon::now())->get();
     }
 
-    public function getByCode($code)
+    public function validateByCode($code)
     {
-        return $this->model()::Where('code', '=', $code)->where('expired', '=', '0')->where('expired_at', '>=', Carbon::now())->first();
+        return $this->model()::Where('code', '=', $code)->where('is_verification', 1)->first();
     }
 }

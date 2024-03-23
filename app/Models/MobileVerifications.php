@@ -10,6 +10,7 @@ class MobileVerifications extends Model
 
     public $fillable = [
         'user_id',
+        'is_user',
         'calling_code',
         'phone',
         'code',
@@ -27,7 +28,6 @@ class MobileVerifications extends Model
     ];
 
     public static array $rules = [
-        'calling_code' => 'required',
         'phone' => 'required'
     ];
 

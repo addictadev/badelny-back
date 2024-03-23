@@ -6,7 +6,10 @@ use App\Http\Requests\API\CreateUserAPIRequest;
 use App\Http\Requests\API\LoginAPIRequest;
 use App\Http\Requests\API\UpdatePasswordAPIRequest;
 use App\Http\Requests\API\UpdateUserAPIRequest;
+use App\Http\Resources\UserResource;
+use App\Models\Category;
 use App\Models\User;
+use App\Repositories\CategoryRepository;
 use App\Repositories\UserRepository;
 use App\Services\UsersService;
 use Illuminate\Http\JsonResponse;
@@ -164,16 +167,16 @@ class UserAPIController extends AppBaseController
             if (!auth()->attempt($data)) {
                 return $this->sendApiError(__('auth.failed'), 500);
             }
-
             $token = auth()->user()->createToken('API Token');
 
             $user = $this->usersService->getById(auth()->id());
+
             if (!$user) {
                 return $this->sendApiError(__('passwords.user'), 404);
             }
 
             $data = ['user' => $user, 'token' => $token->accessToken];
-            return $this->sendApiResponse(array('data' => $data), __('auth.login_success'));
+            return $this->sendApiResponse(array('data' => $data), trans('auth.login_success'));
 
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
@@ -255,9 +258,9 @@ class UserAPIController extends AppBaseController
             }
 
             $user->interestCategories()->sync($request->categories);
-
-            return $this->sendApiResponse(array(), __('messages.update_successfully'));
+            return $this->sendApiResponse(new UserResource($user), __('messages.update_successfully'));
         } catch (\Exception $e) {
+            dd($e);
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }

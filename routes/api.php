@@ -15,14 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::group(['middleware' => ['local_handler']] , function () {
-    Route::get('/categories' , 'CategoryAPIController@index');
 
     Route::group(['prefix' => 'user'] , function () {
         Route::get('/splash' , 'UserAPIController@getUserSplash');
         Route::post('/register' , 'UserAPIController@register');
-        Route::post('/login' , [UserAPIController::class,'login']);
+        Route::post('/login' , 'UserAPIController@login');
 
-        Route::group(['middleware' => ['auth:api' , 'role:user']] , function () {
+        Route::group(['middleware' => ['auth:api']] , function () {
             Route::post('/logout' , 'UserAPIController@logout');
             Route::get('/profile' , 'UserAPIController@profile');
             Route::post('/update-profile' , 'UserAPIController@updateUserProfile');
@@ -31,9 +30,6 @@ Route::group(['middleware' => ['local_handler']] , function () {
             // Add Interested categories
             Route::post('/interested-categories' , 'UserAPIController@interestedCategories');
 
-            // Mobile verification
-            Route::post('/send-verification-code' , 'MobileVerificationsAPIController@sendVerificationCode');
-            Route::post('/validate-verification-code' , 'MobileVerificationsAPIController@validateVerificationCode');
         });
     });
 });
@@ -42,4 +38,9 @@ Route::group(['middleware' => ['local_handler']] , function () {
 
 Route::resource('products', App\Http\Controllers\API\ProductAPIController::class)
     ->except(['create', 'edit']);
+Route::resource('categories', App\Http\Controllers\API\CategoryAPIController::class)
+    ->except(['create', 'edit']);
 Route::post('/products/{id}', [App\Http\Controllers\API\ProductAPIController::class,'update'])->name('products.update');
+// Mobile verification
+ Route::post('/send-verification-code' , 'MobileVerificationsAPIController@sendVerificationCode');
+Route::post('/validate-verification-code' , 'MobileVerificationsAPIController@validateVerificationCode');
