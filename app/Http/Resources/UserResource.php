@@ -9,7 +9,7 @@ class UserResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
 
@@ -17,17 +17,18 @@ class UserResource extends JsonResource
     {
 
         return [
-            'id' => $this->id ,
-            'name' => $this->name ,
-            'email' => $this->email ,
-            'phone' => $this->phone ,
-            'birth date' => $this->date_of_birth ,
-            'gender' => $this->gender == 1 ? 'Male' : 'Female' ,
-            'Categories interested' => CategoryResource::collection($this->interestCategories) ,
-            'created_at' => \Carbon\Carbon::parse($this->created_at) ,
+                'id' => $this->id,
+                'name' => $this->name,
+                'email' => $this->email,
+                'phone' =>  $this->phone,
+                'birth date' => $this->date_of_birth,
+                'gender' => $this->gender == 1 ? 'Male' : 'Female',
+                'Categories_interested' => CategoryResource::collection($this->interestCategories),
+                'created_at' => \Carbon\Carbon::parse($this->created_at),
+
             'links' => [
-                'self' => url()->current() ,
-            ] ,
+                'self' => url()->current(),
+            ],
         ];
     }
 }

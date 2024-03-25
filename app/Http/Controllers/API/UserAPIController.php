@@ -136,7 +136,7 @@ class UserAPIController extends AppBaseController
         try {
             $user = $this->usersService->register($request);
             if (!$user) {
-                return $this->sendApiError(__('messages.something_went_wrong'), 500);
+                return $this->sendApiError(__('messages.something_went_wrong'), 404);
             }
 
             if ($request->hasFile('avatar')) {
@@ -165,7 +165,7 @@ class UserAPIController extends AppBaseController
             ];
 
             if (!auth()->attempt($data)) {
-                return $this->sendApiError(__('auth.failed'), 500);
+                return $this->sendApiError(__('auth.failed'), 403);
             }
             $token = auth()->user()->createToken('API Token');
 
@@ -258,9 +258,8 @@ class UserAPIController extends AppBaseController
             }
 
             $user->interestCategories()->sync($request->categories);
-            return $this->sendApiResponse(new UserResource($user), __('messages.update_successfully'));
+            return $this->sendApiResponse(array('data' => new UserResource($user)), __('messages.update_successfully'));
         } catch (\Exception $e) {
-            dd($e);
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
