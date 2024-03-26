@@ -121,7 +121,7 @@ class MobileVerificationsAPIController extends AppBaseController
             $previousMobileVerifications = $this->mobileVerificationsRepository->findByMobileNumber($request->calling_code, $request->phone);
 
             if (count($previousMobileVerifications) > 0) {
-              $rr =  $this->mobileVerificationsRepository->model()::where('phone' , $request->phone)->update(array('expired' => '1'));
+              $this->mobileVerificationsRepository->model()::where('phone' , $request->phone)->update(array('expired' => '1'));
             }
             // call code processor to generate verification code.
             $code = CodeProcessor::getInstance()->generateCode();
@@ -174,8 +174,8 @@ class MobileVerificationsAPIController extends AppBaseController
         try {
             $mobileVerifications = $this->mobileVerificationsRepository->validateByCode(\request('code'));
             if ($mobileVerifications) {
-                $this->mobileVerificationsRepository->model()::Where('is_verification', '=', 1)->where('phone' , $mobileVerifications->phone)->update(array('expired' => '1'));
-                $data = ['is_user' =>$mobileVerifications->is_user , 'Verification' => true];
+                $mobileVerifications->update(array('expired' => 1, 'is_verification' => 1));
+                $data = ['is_user' =>$mobileVerifications->is_user , 'is_verification' => true];
                   return $this->sendApiResponse(array('data' =>$data), 'Mobile Verification successfully.');
 
             }

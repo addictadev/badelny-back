@@ -56,9 +56,9 @@ class AppBaseController extends Controller
     public function sendApiError($error, $code = 404, $erroCode = 0)
     {
         if($erroCode == 1){
-            return Response::json(array("message" => $error, "status" => false, 'error_code' => 1), $code);
+            return Response::json(array("message" => $error, "success" => false, 'error_code' => 1), $code);
         }else{
-            return Response::json(array("message" => $error, "status" => false), $code);
+            return Response::json(array("message" => $error, "success" => false), $code);
         }
     }
 

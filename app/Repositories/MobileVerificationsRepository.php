@@ -14,6 +14,7 @@ class MobileVerificationsRepository extends BaseRepository
         'phone',
         'code',
         'expired',
+        'is_verification',
         'expired_at'
     ];
 
@@ -34,6 +35,6 @@ class MobileVerificationsRepository extends BaseRepository
 
     public function validateByCode($code)
     {
-        return $this->model()::Where('code', '=', $code)->where('is_verification', 1)->first();
+        return $this->model()::Where('code', '=', $code)->where('expired', 0)->where('expired_at', '>=', Carbon::now())->first();
     }
 }

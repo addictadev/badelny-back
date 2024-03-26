@@ -15,6 +15,7 @@ class MobileVerifications extends Model
         'phone',
         'code',
         'expired',
+        'is_verification',
         'expired_at'
     ];
 
