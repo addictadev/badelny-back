@@ -160,10 +160,10 @@ class MobileVerificationsAPIController extends AppBaseController
                     return $this->sendApiResponse(array(), 'User authenticated successfully.');
                 }
 
-                return $this->sendApiError(__('messages.Mobile_Not_Valid'), 500);
+                return $this->sendApiError(__('messages.Mobile_Not_Valid'), 422);
             }
 
-            return $this->sendApiError(__('messages.Code_Not_Valid'), 500);
+            return $this->sendApiError(__('messages.Code_Not_Valid'), 422);
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
@@ -179,7 +179,7 @@ class MobileVerificationsAPIController extends AppBaseController
                   return $this->sendApiResponse(array('data' =>$data), 'Mobile Verification successfully.');
 
             }
-            return $this->sendApiError(__('messages.Code_Not_Valid'), 500);
+            return $this->sendApiError(__('messages.Code_Not_Valid'), 422);
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }

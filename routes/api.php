@@ -15,12 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::group(['middleware' => ['local_handler']] , function () {
+
     Route::resource('products', App\Http\Controllers\API\ProductAPIController::class)
         ->except(['create', 'edit']);
     Route::resource('categories', App\Http\Controllers\API\CategoryAPIController::class)
         ->except(['create', 'edit']);
     Route::post('/products/{id}', [App\Http\Controllers\API\ProductAPIController::class,'update'])->name('products.update');
-// Mobile verification
+    // Mobile verification
     Route::post('/send-verification-code' , 'MobileVerificationsAPIController@sendVerificationCode');
     Route::post('/validate-verification-code' , 'MobileVerificationsAPIController@validateVerificationCode');
 

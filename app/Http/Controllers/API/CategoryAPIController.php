@@ -32,9 +32,8 @@ class CategoryAPIController extends AppBaseController
         try {
             $categories = $this->categoryRepository->all();
 
-            return $this->sendResponse(CategoryResource::collection($categories), 'Categories retrieved successfully');
+            return $this->sendApiResponse(array('data' => CategoryResource::collection($categories)), 'Categories retrieved successfully');
         } catch (\Exception $e) {
-            dd($e);
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
@@ -47,11 +46,15 @@ class CategoryAPIController extends AppBaseController
      */
     public function store(CreateCategoryAPIRequest $request): JsonResponse
     {
-        $input = $request->all();
+        try {
+            $input = $request->all();
 
-        $category = $this->categoryRepository->create($input);
+            $category = $this->categoryRepository->create($input);
 
-        return $this->sendResponse($category->toArray(), 'Category saved successfully');
+            return $this->sendApiResponse(array('data' => $category->toArray()), 'Category saved successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
     }
 
     /**
@@ -60,14 +63,18 @@ class CategoryAPIController extends AppBaseController
      */
     public function show($id): JsonResponse
     {
-        /** @var Category $category */
-        $category = $this->categoryRepository->find($id);
+        try {
+            /** @var Category $category */
+            $category = $this->categoryRepository->find($id);
 
-        if (empty($category)) {
-            return $this->sendError('Category not found');
+            if (empty($category)) {
+                return $this->sendApiError('Category not found', 404);
+            }
+
+            return $this->sendApiResponse(array('data' => $category->toArray()), 'Category retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
-
-        return $this->sendResponse($category->toArray(), 'Category retrieved successfully');
     }
 
     /**
@@ -76,18 +83,22 @@ class CategoryAPIController extends AppBaseController
      */
     public function update($id, UpdateCategoryAPIRequest $request): JsonResponse
     {
-        $input = $request->all();
+        try {
+            $input = $request->all();
 
-        /** @var Category $category */
-        $category = $this->categoryRepository->find($id);
+            /** @var Category $category */
+            $category = $this->categoryRepository->find($id);
 
-        if (empty($category)) {
-            return $this->sendError('Category not found');
+            if (empty($category)) {
+                return $this->sendApiError('Category not found', 404);
+            }
+
+            $category = $this->categoryRepository->update($input, $id);
+
+            return $this->sendApiResponse(array('data' => $category->toArray()), 'Category updated successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
-
-        $category = $this->categoryRepository->update($input, $id);
-
-        return $this->sendResponse($category->toArray(), 'Category updated successfully');
     }
 
     /**
@@ -98,15 +109,19 @@ class CategoryAPIController extends AppBaseController
      */
     public function destroy($id): JsonResponse
     {
-        /** @var Category $category */
-        $category = $this->categoryRepository->find($id);
+        try {
+            /** @var Category $category */
+            $category = $this->categoryRepository->find($id);
 
-        if (empty($category)) {
-            return $this->sendError('Category not found');
+            if (empty($category)) {
+                return $this->sendApiError('Category not found', 404);
+            }
+
+            $category->delete();
+
+            return $this->sendApiResponse(array(), 'Category deleted successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
-
-        $category->delete();
-
-        return $this->sendSuccess('Category deleted successfully');
     }
 }

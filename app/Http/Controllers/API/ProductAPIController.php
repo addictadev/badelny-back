@@ -29,13 +29,17 @@ class ProductAPIController extends AppBaseController
      */
     public function index(Request $request): JsonResponse
     {
-        $products = $this->productRepository->all(
-            $request->except(['skip', 'limit']),
-            $request->get('skip'),
-            $request->get('limit')
-        );
+        try {
+            $products = $this->productRepository->all(
+                $request->except(['skip', 'limit']),
+                $request->get('skip'),
+                $request->get('limit')
+            );
 
-        return  $this->sendResponse(ProductResource::collection($products), 'Products retrieved successfully');
+            return  $this->sendApiResponse(array('data' => ProductResource::collection($products)), 'Products retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
     }
 
     /**
@@ -44,15 +48,19 @@ class ProductAPIController extends AppBaseController
      */
     public function store(CreateProductAPIRequest $request): JsonResponse
     {
-        $input = $request->all();
+        try {
+            $input = $request->all();
 
-        $product = $this->productRepository->create($input);
+            $product = $this->productRepository->create($input);
 
-        if($request['image'] && $request['image']->isValid()){
-            $product->addMediaFromRequest('image')->toMediaCollection('images');
+            if($request['image'] && $request['image']->isValid()){
+                $product->addMediaFromRequest('image')->toMediaCollection('images');
+            }
+
+            return $this->sendApiResponse(array('data' => new ProductResource($product)), 'Product saved successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
-
-        return $this->sendResponse(new ProductResource($product), 'Product saved successfully');
     }
 
     /**
@@ -61,14 +69,18 @@ class ProductAPIController extends AppBaseController
      */
     public function show($id): JsonResponse
     {
-        /** @var Product $product */
-        $product = $this->productRepository->find($id);
+        try {
+            /** @var Product $product */
+            $product = $this->productRepository->find($id);
 
-        if (empty($product)) {
-            return $this->sendError('Product not found');
+            if (empty($product)) {
+                return $this->sendApiError('Product not found', 404);
+            }
+
+            return $this->sendApiResponse(array('data' => $product->toArray()), 'Product retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
-
-        return $this->sendResponse($product->toArray(), 'Product retrieved successfully');
     }
 
     /**
@@ -77,24 +89,27 @@ class ProductAPIController extends AppBaseController
      */
     public function update($id, UpdateProductAPIRequest $request): JsonResponse
     {
+        try {
+            $input = $request->all();
 
-        $input = $request->all();
+            /** @var Product $product */
+            $product = $this->productRepository->find($id);
 
-        /** @var Product $product */
-        $product = $this->productRepository->find($id);
+            if (empty($product)) {
+                return $this->sendApiError('Product not found', 404);
+            }
 
-        if (empty($product)) {
-            return $this->sendError('Product not found');
+            $product = $this->productRepository->update($input, $id);
+
+            if($request['image'] && $request['image']->isValid()){
+                $product->clearMediaCollection('images');
+                $product->addMediaFromRequest('image')->toMediaCollection('images');
+            }
+
+            return $this->sendApiResponse(array('data' => new ProductResource($product)), 'Product updated successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
-
-        $product = $this->productRepository->update($input, $id);
-
-        if($request['image'] && $request['image']->isValid()){
-            $product->clearMediaCollection('images');
-            $product->addMediaFromRequest('image')->toMediaCollection('images');
-        }
-
-        return $this->sendResponse(new ProductResource($product), 'Product updated successfully');
     }
 
     /**
@@ -105,14 +120,18 @@ class ProductAPIController extends AppBaseController
      */
     public function destroy($id): JsonResponse
     {
-        /** @var Product $product */
-        $product = $this->productRepository->find($id);
+        try {
+            /** @var Product $product */
+            $product = $this->productRepository->find($id);
 
-        if (empty($product)) {
-            return $this->sendError('Product not found');
+            if (empty($product)) {
+                return $this->sendApiError('Product not found', 404);
+            }
+            $product->delete();
+
+            return $this->sendApiResponse(array(), 'Product deleted successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
-        $product->delete();
-
-        return $this->sendSuccess('Product deleted successfully');
     }
 }
