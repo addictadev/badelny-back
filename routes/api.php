@@ -29,6 +29,8 @@ Route::group(['middleware' => ['local_handler']] , function () {
         Route::get('/splash' , 'UserAPIController@getUserSplash');
         Route::post('/register' , 'UserAPIController@register');
         Route::post('/login' , 'UserAPIController@login');
+        Route::post('/forget-password', 'PasswordResetsCodesAPIController@forgetPassword');
+        Route::post('/reset-password', 'PasswordResetsCodesAPIController@resetPassword');
 
         Route::group(['middleware' => ['auth:api']] , function () {
             Route::post('/logout' , 'UserAPIController@logout');

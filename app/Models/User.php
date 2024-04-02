@@ -63,6 +63,16 @@ class User extends Authenticatable
     ];
 
 
+    /**
+     * Validation rules
+     *
+     * @var array
+     */
+    public static $apiResetPasswordRules = [
+        'code' => 'required',
+        'password' => 'required|confirmed|min:6',
+    ];
+
     public function interestCategories()
     {
         return $this->belongsToMany('App\Models\Category', 'users_categories',
