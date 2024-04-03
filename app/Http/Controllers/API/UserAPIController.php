@@ -159,7 +159,7 @@ class UserAPIController extends AppBaseController
             }
             $mobileVerify = $this->mobileVerificationsRepository->findByPhoneVerify($phoneNumberFormated);
             if (!$mobileVerify) {
-                return $this->sendApiError(__('messages.Mobile_Not_Verify'), 422);
+                return $this->sendApiResponse(array('data' => ['is_verification' => 0]), __('messages.Mobile_Not_Verify'));
             }
             $mobileExit = $this->usersService->getByMobile($phoneNumberFormated);
             if ($mobileExit) {
@@ -180,7 +180,7 @@ class UserAPIController extends AppBaseController
 
             $user = $this->usersService->getById($user->id);
             $token = $user->createToken('API Token')->accessToken;
-            $response = array('user' => $user, 'token' => $token);
+            $response = array('user' => $user, 'is_verification' => 1, 'token' => $token);
             return $this->sendApiResponse(array('data' => $response), __('auth.register_success'));
 
         } catch (\Exception $e) {
@@ -207,7 +207,7 @@ class UserAPIController extends AppBaseController
                 return $this->sendApiError(__('passwords.user'), 404);
             }
 
-            $data = ['user' => $user, 'token' => $token->accessToken];
+            $data = ['user' => $user, 'is_verification' => 1, 'token' => $token->accessToken];
             return $this->sendApiResponse(array('data' => $data), trans('auth.login_success'));
 
         } catch (\Exception $e) {
