@@ -32,6 +32,8 @@ class CreateUserAPIRequest extends APIRequest
             'gender' => 'required',
             'date_of_birth' => 'required',
             'email' => 'required|email|unique:users',
+            'calling_code' => 'required',
+            'phone' => 'required',
             'password' => 'required|confirmed|min:8'
         ];
     }

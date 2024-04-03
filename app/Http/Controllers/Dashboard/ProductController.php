@@ -36,7 +36,7 @@ class ProductController extends AppBaseController
 
         $product = $this->productRepository->create($input);
 
-        if($request['image'] && $request['image']->isValid()){
+        if($request->hasFile('image')){
             $product->addMediaFromRequest('image')->toMediaCollection('images');
         }
         return redirect()->route('products.index')->with('success',trans('dashboard.Added_Successfully'));
@@ -71,7 +71,7 @@ class ProductController extends AppBaseController
 
         $product = $this->productRepository->update($request->all(), $id);
 
-        if($request['image'] && $request['image']->isValid()){
+        if($request->hasFile('image')){
             $product->clearMediaCollection('images');
             $product->addMediaFromRequest('image')->toMediaCollection('images');
         }

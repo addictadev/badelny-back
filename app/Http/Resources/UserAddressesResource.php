@@ -18,7 +18,7 @@ class UserAddressesResource extends JsonResource
 
         return [
                 'id' => $this->id,
-                'area_id' => $this->area,
+                'area_id' => $this->area_id,
                 'area' => $this->area,
                 'address' => $this->address,
                 'flat' =>  $this->flat,

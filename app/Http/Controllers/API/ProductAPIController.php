@@ -52,7 +52,7 @@ class ProductAPIController extends AppBaseController
 
             $product = $this->productRepository->create($input);
 
-            if($request['images'] && $request['images']->isValid()){
+            if($request->hasFile('images')){
                 $product->addMultipleMediaFromRequest(['images'])
                     ->each(function ($product) {
                         $product->toMediaCollection('products_images');
@@ -104,7 +104,7 @@ class ProductAPIController extends AppBaseController
 
             $product = $this->productRepository->update($input, $id);
 
-            if($request['images'] && $request['images']->isValid()){
+            if($request->hasFile('images')){
                 $product->addMultipleMediaFromRequest(['images'])
                     ->each(function ($product) {
                         $product->toMediaCollection('products_images');

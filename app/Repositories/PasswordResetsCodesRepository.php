@@ -31,7 +31,7 @@ class PasswordResetsCodesRepository extends BaseRepository
      *
      * @return array
      */
-    public function getFieldsSearchable()
+    public function getFieldsSearchable(): array
     {
         return $this->fieldSearchable;
     }
@@ -39,7 +39,7 @@ class PasswordResetsCodesRepository extends BaseRepository
     /**
      * Configure the Model
      **/
-    public function model()
+    public function model(): string
     {
         return PasswordResetsCodes::class;
     }

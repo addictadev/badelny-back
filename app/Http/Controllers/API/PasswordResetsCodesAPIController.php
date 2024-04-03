@@ -4,17 +4,13 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\API\CreatePasswordResetsCodesAPIRequest;
 use App\Http\Requests\API\ResetPasswordAPIRequest;
-use App\Http\Requests\API\UpdatePasswordResetsCodesAPIRequest;
 use App\Models\PasswordResetsCodes;
 use App\Repositories\PasswordResetsCodesRepository;
 use App\Services\CodeProcessor;
-use App\Services\SMSService;
 use App\Services\UsersService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Response;
 
 /**
@@ -30,14 +26,11 @@ class PasswordResetsCodesAPIController extends AppBaseController
     /** @var  UsersService */
     private $usersService;
 
-    /** @var  SMSService */
-    private $SMSService;
 
-    public function __construct(PasswordResetsCodesRepository $passwordResetsCodesRepo, UsersService $usersService, SMSService $SMSService)
+    public function __construct(PasswordResetsCodesRepository $passwordResetsCodesRepo, UsersService $usersService)
     {
         $this->passwordResetsCodesRepository = $passwordResetsCodesRepo;
         $this->usersService = $usersService;
-        $this->SMSService = $SMSService;
     }
 
     /**
@@ -147,7 +140,16 @@ class PasswordResetsCodesAPIController extends AppBaseController
     public function forgetPassword(CreatePasswordResetsCodesAPIRequest $request)
     {
         try {
-            $user = $this->passwordResetsCodesRepository->findUserByFullMobileNumber($request->mobile);
+            $fullMobileNumber = $request->mobile;
+            $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+            $phoneNumber = $phoneUtil->parse($fullMobileNumber , null , null , true);
+            $isValid = $phoneUtil->isValidNumber($phoneNumber);
+            $phoneNumberFormated = $phoneUtil->format($phoneNumber, \libphonenumber\PhoneNumberFormat::E164);
+            if (!$isValid) {
+                return $this->sendApiError(__('auth.phoneNotValid') , 500);
+            }
+
+            $user = $this->passwordResetsCodesRepository->findUserByFullMobileNumber($phoneNumberFormated);
             if ($user) {
                 //check if mobile number has a valid verification code.
                 $previousPasswordReset = $this->passwordResetsCodesRepository->findByMobileNumber($user->full_mobile_number);

@@ -51,7 +51,7 @@ Route::group(['middleware' => ['local_handler']] , function () {
             Route::post('/contact-us' , 'UserAPIController@contactUs');
 
             Route::resource('users-addresses', App\Http\Controllers\API\UsersAddressesAPIController::class)->except('update');
-            Route::post('update/{id}' , 'UsersAddressesAPIController@update');
+            Route::post('users-addresses/{id}' , 'UsersAddressesAPIController@update');
 
             Route::post('/products/{id}', [App\Http\Controllers\API\ProductAPIController::class,'update'])->name('products.update');
             Route::get('/my-products' , 'ProductAPIController@index');

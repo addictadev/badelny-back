@@ -109,16 +109,19 @@ class UsersService
 
     /**
      * @param $request
-     * @param $phoneNumber
+     * @param $full_mobile_number
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function register($request)
+    public function register($full_mobile_number, $request)
     {
         $newUser = collect([
             'name' => $request->name,
             'password' => bcrypt($request->password),
             'email' => $request->email,
             'gender' => $request->gender,
+            'calling_code' => $request->calling_code,
+            'phone' => $request->phone,
+            'full_mobile_number' => $full_mobile_number,
             'date_of_birth' => $request->date_of_birth,
         ]);
         return $this->userRepository->create($newUser->toArray());

@@ -10,6 +10,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "infyomlabs/adminlte-templates": "^5.0",
         "infyomlabs/laravel-generator": "^5.0",
+        "giggsey/libphonenumber-for-php": "^8.13",
         "laravel/framework": "^9.19",
         "laravel/passport": "^11.10",
         "laravel/sanctum": "^3.0",

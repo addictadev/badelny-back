@@ -43,7 +43,7 @@ class CategoryController extends AppBaseController
 
        $category = $this->categoryRepository->create($input);
 
-        if($request['image'] && $request['image']->isValid()){
+        if($request->hasFile('image')){
             $category->addMediaFromRequest('image')->toMediaCollection('images');
         }
         return redirect()->route('categories.index')->with('success',trans('dashboard.Added_Successfully'));
@@ -73,7 +73,7 @@ class CategoryController extends AppBaseController
 
     $category =  $this->categoryRepository->update($request->all(), $id);
 
-        if($request['image'] && $request['image']->isValid()){
+        if($request->hasFile('image')){
             $category->clearMediaCollection('images');
             $category->addMediaFromRequest('image')->toMediaCollection('images');
         }

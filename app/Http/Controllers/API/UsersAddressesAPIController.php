@@ -118,7 +118,7 @@ class UsersAddressesAPIController extends AppBaseController
 
             $usersAddresses->delete();
 
-            return  $this->sendApiResponse(array('data' => new UserAddressesResource($usersAddresses)), 'Users Addresses retrieved successfully');
+            return  $this->sendApiResponse(array(), 'Users Addresses retrieved successfully');
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }

@@ -28,9 +28,14 @@ class MobileVerificationsRepository extends BaseRepository
         return MobileVerifications::class;
     }
 
-    public function findByMobileNumber($calling_code, $mobileNumber)
+    public function findByMobileNumber($mobileNumber)
     {
-        return $this->model()::Where('phone', '=', $mobileNumber)->where('expired_at', '>=', Carbon::now())->get();
+        return $this->model()::Where('phone', '=', $mobileNumber)->where('expired',  0)->get();
+    }
+
+    public function findByPhoneVerify($mobileNumber)
+    {
+        return $this->model()::Where('phone', '=', $mobileNumber)->where('is_verification', 1)->first();
     }
 
     public function validateByCode($code)

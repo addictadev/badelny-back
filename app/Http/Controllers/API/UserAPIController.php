@@ -15,6 +15,7 @@ use App\Models\ContactUs;
 use App\Models\TermsConditions;
 use App\Models\User;
 use App\Repositories\CategoryRepository;
+use App\Repositories\MobileVerificationsRepository;
 use App\Repositories\ProductRepository;
 use App\Repositories\UserRepository;
 use App\Services\UsersService;
@@ -34,15 +35,18 @@ class UserAPIController extends AppBaseController
     private CategoryRepository $categoryRepository;
     private ProductRepository $productRepository;
 
+    private MobileVerificationsRepository $mobileVerificationsRepository;
+
     /** @var  UsersService */
     private $usersService;
 
-    public function __construct(UserRepository $userRepo, UsersService $usersService, CategoryRepository $categoryRepo, ProductRepository $productRepo)
+    public function __construct(UserRepository $userRepo, UsersService $usersService, CategoryRepository $categoryRepo, ProductRepository $productRepo, MobileVerificationsRepository $mobileVerificationsRepo)
     {
         $this->userRepository = $userRepo;
         $this->usersService = $usersService;
         $this->categoryRepository = $categoryRepo;
         $this->productRepository = $productRepo;
+        $this->mobileVerificationsRepository = $mobileVerificationsRepo;
     }
 
     /**
@@ -145,7 +149,24 @@ class UserAPIController extends AppBaseController
     public function register(CreateUserAPIRequest $request)
     {
         try {
-            $user = $this->usersService->register($request);
+            $fullMobileNumber = $request->calling_code . $request->phone;
+            $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+            $phoneNumber = $phoneUtil->parse($fullMobileNumber , null , null , true);
+            $isValid = $phoneUtil->isValidNumber($phoneNumber);
+            $phoneNumberFormated = $phoneUtil->format($phoneNumber, \libphonenumber\PhoneNumberFormat::E164);
+            if (!$isValid) {
+                return $this->sendApiError(__('auth.phoneNotValid') , 500);
+            }
+            $mobileVerify = $this->mobileVerificationsRepository->findByPhoneVerify($phoneNumberFormated);
+            if (!$mobileVerify) {
+                return $this->sendApiError(__('messages.Mobile_Not_Verify'), 422);
+            }
+            $mobileExit = $this->usersService->getByMobile($phoneNumberFormated);
+            if ($mobileExit) {
+                return $this->sendApiError(__('messages.Mobile_In_Use'), 422);
+            }
+
+            $user = $this->usersService->register($phoneNumberFormated, $request);
             if (!$user) {
                 return $this->sendApiError(__('messages.something_went_wrong'), 404);
             }
@@ -218,7 +239,7 @@ class UserAPIController extends AppBaseController
             $products = $this->productRepository->getHomeProducts($limit);
             $response = array(
                 'data' => [
-                    'user' => new UserResource($user),
+                    'user' => $user ? new UserResource($user) : null,
                     'categories' => CategoryResource::collection($categories),
                     'products' => ProductResource::collection($products),
                 ],
@@ -366,7 +387,7 @@ class UserAPIController extends AppBaseController
                 'message' => $request->message,
             ]);
 
-            if($request['images'] && $request['images']->isValid()){
+            if($request->hasFile('images')){
                 $contactUs->addMultipleMediaFromRequest(['images'])
                     ->each(function ($contactUs) {
                         $contactUs->toMediaCollection('contact_images');
