@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use HasRoles, HasApiTokens , HasFactory, Notifiable;
+    use HasRoles, HasApiTokens , HasFactory, Notifiable, InteractsWithMedia;
     public $table = 'users';
 
     public $fillable = [
@@ -24,6 +26,7 @@ class User extends Authenticatable
         'date_of_birth',
     ];
 
+    protected $appends = ['avatar'];
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -77,6 +80,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany('App\Models\Category', 'users_categories',
             'user_id', 'category_id');
+    }
+
+    public function getAvatarAttribute()
+    {
+        $url = $this->getMedia('user_avatar')->first();
+        return $url ? $url->getUrl() : $url;
     }
 
 }

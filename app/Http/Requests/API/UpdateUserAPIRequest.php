@@ -3,6 +3,9 @@
 namespace App\Http\Requests\API;
 
 use App\Models\User;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use InfyOm\Generator\Request\APIRequest;
 
 class UpdateUserAPIRequest extends APIRequest
@@ -25,7 +28,15 @@ class UpdateUserAPIRequest extends APIRequest
     public function rules()
     {
         $rules = User::$rules;
-        
+
         return $rules;
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $response = array('success' => 'false');
+        $errorString = implode(", ",$validator->messages()->all());
+        $response['error'] = $errorString;
+        throw new HttpResponseException(response()->json($response, JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

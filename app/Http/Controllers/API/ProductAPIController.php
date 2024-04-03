@@ -10,6 +10,7 @@ use App\Repositories\ProductRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ProductAPIController
@@ -30,11 +31,8 @@ class ProductAPIController extends AppBaseController
     public function index(Request $request): JsonResponse
     {
         try {
-            $products = $this->productRepository->all(
-                $request->except(['skip', 'limit']),
-                $request->get('skip'),
-                $request->get('limit')
-            );
+            $limit = $request->limit ? $request->limit : 20;
+            $products = $this->productRepository->getByUser($this->getUser()->id, $limit);
 
             return  $this->sendApiResponse(array('data' => ProductResource::collection($products)), 'Products retrieved successfully');
         } catch (\Exception $e) {
@@ -50,11 +48,15 @@ class ProductAPIController extends AppBaseController
     {
         try {
             $input = $request->all();
+            $input['user_id'] = auth()->id();
 
             $product = $this->productRepository->create($input);
 
-            if($request['image'] && $request['image']->isValid()){
-                $product->addMediaFromRequest('image')->toMediaCollection('images');
+            if($request['images'] && $request['images']->isValid()){
+                $product->addMultipleMediaFromRequest(['images'])
+                    ->each(function ($product) {
+                        $product->toMediaCollection('products_images');
+                    });
             }
 
             return $this->sendApiResponse(array('data' => new ProductResource($product)), 'Product saved successfully');
@@ -71,13 +73,13 @@ class ProductAPIController extends AppBaseController
     {
         try {
             /** @var Product $product */
-            $product = $this->productRepository->find($id);
+            $product = $this->productRepository->getById($id);
 
             if (empty($product)) {
                 return $this->sendApiError('Product not found', 404);
             }
 
-            return $this->sendApiResponse(array('data' => $product->toArray()), 'Product retrieved successfully');
+            return $this->sendApiResponse(array('data' => new ProductResource($product)), 'Product retrieved successfully');
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
@@ -90,6 +92,7 @@ class ProductAPIController extends AppBaseController
     public function update($id, UpdateProductAPIRequest $request): JsonResponse
     {
         try {
+            $request->merge(['user_id' =>auth()->id()]);
             $input = $request->all();
 
             /** @var Product $product */
@@ -101,9 +104,11 @@ class ProductAPIController extends AppBaseController
 
             $product = $this->productRepository->update($input, $id);
 
-            if($request['image'] && $request['image']->isValid()){
-                $product->clearMediaCollection('images');
-                $product->addMediaFromRequest('image')->toMediaCollection('images');
+            if($request['images'] && $request['images']->isValid()){
+                $product->addMultipleMediaFromRequest(['images'])
+                    ->each(function ($product) {
+                        $product->toMediaCollection('products_images');
+                    });
             }
 
             return $this->sendApiResponse(array('data' => new ProductResource($product)), 'Product updated successfully');

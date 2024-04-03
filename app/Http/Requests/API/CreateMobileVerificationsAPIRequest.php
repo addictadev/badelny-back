@@ -3,6 +3,9 @@
 namespace App\Http\Requests\API;
 
 use App\Models\MobileVerifications;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use InfyOm\Generator\Request\APIRequest;
 
 class CreateMobileVerificationsAPIRequest extends APIRequest
@@ -25,5 +28,13 @@ class CreateMobileVerificationsAPIRequest extends APIRequest
     public function rules()
     {
         return MobileVerifications::$rules;
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $response = array('success' => 'false');
+        $errorString = implode(", ",$validator->messages()->all());
+        $response['error'] = $errorString;
+        throw new HttpResponseException(response()->json($response, JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

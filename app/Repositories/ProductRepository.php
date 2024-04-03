@@ -31,6 +31,21 @@ class ProductRepository extends BaseRepository
         return Product::class;
     }
 
+    public function getHomeProducts($limit)
+    {
+        return $this->model()::where('is_approve', 1)->paginate($limit);
+    }
+
+    public function getByUser($user_id, $limit)
+    {
+        return $this->model()::where('user_id', $user_id)->paginate($limit);
+    }
+
+    public function getById($id)
+    {
+        return $this->model()::where('id', $id)->first();
+    }
+
     public function loadAjax()
     {
         $products = Product::get();

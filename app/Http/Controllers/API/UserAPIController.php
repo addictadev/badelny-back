@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Requests\API\ContactUsAPIRequest;
 use App\Http\Requests\API\CreateUserAPIRequest;
 use App\Http\Requests\API\LoginAPIRequest;
 use App\Http\Requests\API\UpdatePasswordAPIRequest;
 use App\Http\Requests\API\UpdateUserAPIRequest;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ProductResource;
 use App\Http\Resources\UserResource;
 use App\Models\Category;
+use App\Models\ContactUs;
+use App\Models\TermsConditions;
 use App\Models\User;
 use App\Repositories\CategoryRepository;
+use App\Repositories\ProductRepository;
 use App\Repositories\UserRepository;
 use App\Services\UsersService;
 use Illuminate\Http\JsonResponse;
@@ -25,13 +31,18 @@ class UserAPIController extends AppBaseController
 {
     private UserRepository $userRepository;
 
+    private CategoryRepository $categoryRepository;
+    private ProductRepository $productRepository;
+
     /** @var  UsersService */
     private $usersService;
 
-    public function __construct(UserRepository $userRepo, UsersService $usersService)
+    public function __construct(UserRepository $userRepo, UsersService $usersService, CategoryRepository $categoryRepo, ProductRepository $productRepo)
     {
         $this->userRepository = $userRepo;
         $this->usersService = $usersService;
+        $this->categoryRepository = $categoryRepo;
+        $this->productRepository = $productRepo;
     }
 
     /**
@@ -197,6 +208,28 @@ class UserAPIController extends AppBaseController
         }
     }
 
+    public function getHome()
+    {
+        try {
+            $user_id = \request()->user() ? \request()->user()->id : null;
+            $user = $this->usersService->getInfo($user_id);
+            $limit = \request('limit') ? \request('limit') : 20;
+            $categories = $this->categoryRepository->all();
+            $products = $this->productRepository->getHomeProducts($limit);
+            $response = array(
+                'data' => [
+                    'user' => new UserResource($user),
+                    'categories' => CategoryResource::collection($categories),
+                    'products' => ProductResource::collection($products),
+                ],
+            );
+
+            return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
     public function updateProfile(Request $request)
     {
         try {
@@ -259,6 +292,106 @@ class UserAPIController extends AppBaseController
 
             $user->interestCategories()->sync($request->categories);
             return $this->sendApiResponse(array('data' => new UserResource($user)), __('messages.update_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function myInterestedCategories()
+    {
+        try {
+            $user = $this->usersService->getInfo($this->getUser()->id);
+            $response = array(
+                'data' => CategoryResource::collection($user->interestCategories),
+            );
+
+            return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function termsConditions()
+    {
+        try {
+            $termsConditions = TermsConditions::query()->first();
+            $response = array(
+                'data' => $termsConditions,
+            );
+
+            return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function issuesTypes()
+    {
+        try {
+            $response = array(
+                'data' => array(
+                    [
+                        'id' => 1,
+                        'name' => 'Lorem ipsum'
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Lorem ipsum 2'
+                    ],
+                    [
+                        'id' => 3,
+                        'name' => 'Lorem ipsum 3'
+                    ]
+                )
+            );
+
+            return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function contactUs(ContactUsAPIRequest $request)
+    {
+        try {
+            $user = $this->usersService->getById($this->getUser()->id);
+            if (!$user) {
+                return $this->sendApiError(__('passwords.user'), 404);
+            }
+
+            $contactUs = ContactUs::query()->create([
+                'user_id' => $this->getUser()->id,
+                'phone' => $request->phone,
+                'issue_type' => $request->issue_type,
+                'message' => $request->message,
+            ]);
+
+            if($request['images'] && $request['images']->isValid()){
+                $contactUs->addMultipleMediaFromRequest(['images'])
+                    ->each(function ($contactUs) {
+                        $contactUs->toMediaCollection('contact_images');
+                    });
+            }
+
+            return $this->sendApiResponse(array(), __('messages.update_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function deleteAccount()
+    {
+        try {
+            /** @var User $user */
+            $user = $this->usersService->getById($this->getUser()->id);
+
+            if (empty($user)) {
+                return $this->sendApiError(__('passwords.user'), 404);
+            }
+
+            $user->delete();
+
+            return $this->sendApiResponse(array(), __('messages.retrieved_successfully'));
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }

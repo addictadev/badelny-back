@@ -36,12 +36,7 @@ class Category extends Model implements HasMedia
     }
     public function getNameAttribute()
     {
-        if (app()->getLocale() =='en'){
-            return $this->name_en;
-        }else{
-            return $this->name_ar;
-        }
-
+        return app()->getLocale() == 'ar' ? $this->name_ar : $this->name_en;
     }
 
 

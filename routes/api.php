@@ -16,31 +16,55 @@ use Illuminate\Support\Facades\Route;
 */
 Route::group(['middleware' => ['local_handler']] , function () {
 
-    Route::resource('products', App\Http\Controllers\API\ProductAPIController::class)
+    Route::resource('products', App\Http\Controllers\API\ProductAPIController::class)->middleware('auth:api')
         ->except(['create', 'edit']);
     Route::resource('categories', App\Http\Controllers\API\CategoryAPIController::class)
         ->except(['create', 'edit']);
-    Route::post('/products/{id}', [App\Http\Controllers\API\ProductAPIController::class,'update'])->name('products.update');
+    Route::resource('areas', App\Http\Controllers\API\AreasAPIController::class)
+        ->except(['create', 'edit']);
+
+    Route::get('/terms-conditions' , 'UserAPIController@termsConditions');
+
     // Mobile verification
     Route::post('/send-verification-code' , 'MobileVerificationsAPIController@sendVerificationCode');
     Route::post('/validate-verification-code' , 'MobileVerificationsAPIController@validateVerificationCode');
 
     Route::group(['prefix' => 'user'] , function () {
         Route::get('/splash' , 'UserAPIController@getUserSplash');
+        Route::get('/home' , 'UserAPIController@getHome');
+
         Route::post('/register' , 'UserAPIController@register');
         Route::post('/login' , 'UserAPIController@login');
         Route::post('/forget-password', 'PasswordResetsCodesAPIController@forgetPassword');
         Route::post('/reset-password', 'PasswordResetsCodesAPIController@resetPassword');
 
+        Route::get('/products/{id}' , 'ProductAPIController@show');
+
         Route::group(['middleware' => ['auth:api']] , function () {
             Route::post('/logout' , 'UserAPIController@logout');
-            Route::get('/profile' , 'UserAPIController@profile');
-            Route::post('/update-profile' , 'UserAPIController@updateUserProfile');
-            Route::post('/change-password' , 'UserAPIController@changePassword');
+            Route::delete('/delete-account' , 'UserAPIController@deleteAccount');
 
-            // Add Interested categories
+            Route::get('/profile' , 'UserAPIController@profile');
+            Route::post('/update-profile' , 'UserAPIController@updateProfile');
+            Route::post('/change-password' , 'UserAPIController@changePassword');
+            Route::get('/issues-types' , 'UserAPIController@issuesTypes');
+            Route::post('/contact-us' , 'UserAPIController@contactUs');
+
+            Route::resource('users-addresses', App\Http\Controllers\API\UsersAddressesAPIController::class)->except('update');
+            Route::post('update/{id}' , 'UsersAddressesAPIController@update');
+
+            Route::post('/products/{id}', [App\Http\Controllers\API\ProductAPIController::class,'update'])->name('products.update');
+            Route::get('/my-products' , 'ProductAPIController@index');
+            // Interested categories
+            Route::get('/my-interested-categories' , 'UserAPIController@myInterestedCategories');
             Route::post('/interested-categories' , 'UserAPIController@interestedCategories');
 
         });
+    });
+    Route::group(['prefix' => 'orders'] , function () {
+//    Route::resource('orders', App\Http\Controllers\API\OrderAPIController::class)
+//        ->except(['create', 'edit']);
+    Route::post('/store/{type}' , 'OrderAPIController@store');
+
     });
 });

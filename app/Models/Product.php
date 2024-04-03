@@ -24,7 +24,10 @@ class Product extends Model implements HasMedia
         'description',
         'status',
         'is_approve',
+        'user_id'
     ];
+
+    protected $appends = ['images', 'thumbnail'];
 
     protected $casts = [
         'name' => 'string',
@@ -34,6 +37,17 @@ class Product extends Model implements HasMedia
         'points' => 'string'
     ];
 
+    public function getThumbnailAttribute()
+    {
+        $url = $this->getMedia('products_images')->first();
+        return $url ? $url->getUrl() : $url;
+    }
+
+    public function getImagesAttribute()
+    {
+        return $this->getMedia('products_images')->get();
+    }
+
     public static array $rules = [
 
     ];
@@ -41,6 +55,11 @@ class Product extends Model implements HasMedia
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
     }
 
 

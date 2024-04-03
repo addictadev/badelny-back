@@ -18,8 +18,10 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id ,
             'name' => $this->name ,
-            'category' => isset($this->category) ? $this->category->name_en : '' ,
-            'image' => $this->getFirstMediaUrl('images' , 'thumb') ,
+            'user' => $this->user ? $this->user : '',
+            'category' => $this->category ? $this->category : '' ,
+            'thumbnail' => $this->thumbnail,
+            'images' => $this->images,
             'price' => $this->price ,
             'points' => $this->points ,
             'description' => $this->description ,

@@ -38,7 +38,7 @@ class CreateUserAPIRequest extends APIRequest
 
     protected function failedValidation(Validator $validator)
     {
-        $response = array('status' => 'false');
+        $response = array('success' => 'false');
         $errorString = implode(", ",$validator->messages()->all());
         $response['error'] = $errorString;
         throw new HttpResponseException(response()->json($response, JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
