@@ -39,13 +39,16 @@ class Product extends Model implements HasMedia
 
     public function getThumbnailAttribute()
     {
-        $url = $this->getMedia('products_images')->first();
+        $collection = 'products_images';
+        $url = $this->getMedia($collection)->first();
         return $url ? $url->getUrl() : $url;
     }
 
     public function getImagesAttribute()
     {
-        return $this->getMedia('products_images')->get();
+        $collection = 'products_images';
+        $images = $this->getMedia($collection)->toArray();
+        return count($images) ? $images : [];
     }
 
     public static array $rules = [
