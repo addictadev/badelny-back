@@ -26,6 +26,9 @@ class OrderRepository extends BaseRepository
         if(request()->is_offer){
             return RequestOffer::class;
         }
+        if (request()->has('offer_id')){
+            return Order::class;
+        }
         return Request::class;
     }
 }

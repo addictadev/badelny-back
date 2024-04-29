@@ -8,7 +8,21 @@ class Order extends Model
 {
     public $table = 'orders';
 
-    public $guarded =[];
+    public $fillable = [
+        'from',
+        'to',
+        'exchange_type',
+        'buyer_product_id',
+        'seller_product_id',
+        'points',
+        'status',
+        'request_id',
+    ];
+
+    public function getFillable()
+    {
+        return $this->fillable;
+    }
 
     protected $casts = [
         'from' => 'integer',

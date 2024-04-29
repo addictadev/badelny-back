@@ -32,7 +32,10 @@ class ProductAPIController extends AppBaseController
     {
         try {
             $limit = $request->limit ? $request->limit : 20;
-            $products = $this->productRepository->getByUser($this->getUser()->id, $limit);
+            $category =\request('category_id') ? \request('category_id') : null;
+            $search =\request('search') ? \request('search') : null;
+            $products = $this->productRepository->getByUser($this->getUser()->id, $limit,$category,$search);
+
 
             return  $this->sendApiResponse(array('data' => ProductResource::collection($products)), 'Products retrieved successfully');
         } catch (\Exception $e) {
@@ -139,4 +142,27 @@ class ProductAPIController extends AppBaseController
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
+    /**
+
+     * Add/Remove Product to Favourite
+     * @throws \Exception
+     */
+    public function productFavourite($id): JsonResponse
+    {
+        try {
+            /** @var Product $product */
+            $product = $this->productRepository->find($id);
+
+            if (empty($product)) {
+                return $this->sendApiError('Product not found', 404);
+            }
+            $user_id = auth()->id();
+              $this->productRepository->productFavourite($id,$user_id);
+
+            return $this->sendApiResponse(array(), 'Product Favourite Synced successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
 }

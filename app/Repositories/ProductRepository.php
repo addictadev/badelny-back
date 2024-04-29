@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Favourite;
 use App\Models\Product;
 use App\Repositories\BaseRepository;
 use Yajra\DataTables\DataTables;
@@ -31,20 +32,41 @@ class ProductRepository extends BaseRepository
         return Product::class;
     }
 
-    public function getHomeProducts($limit)
+    public function getHomeProducts($limit,$category,$search)
     {
-        return $this->model()::where('is_approve', 1)->paginate($limit);
+        return $this->model()::where('is_approve', 1)->Category($category)->Search($search)->paginate($limit);
     }
 
-    public function getByUser($user_id, $limit)
+    public function getByUser($user_id, $limit,$category,$search)
     {
-        return $this->model()::where('user_id', $user_id)->paginate($limit);
+        return $this->model()::where('user_id', $user_id)->Category($category)->Search($search)->paginate($limit);
     }
 
     public function getById($id)
     {
         return $this->model()::where('id', $id)->first();
     }
+
+    public function productFavourite($id,$user_id)
+    {
+        // check the product exit in favourite or not
+        $favourite = Favourite::where('user_id',$user_id)->where('product_id',$id)->first();
+
+        if ($favourite){
+            $favourite->delete();
+        }else{
+            // add new fav product
+       $favourite = new Favourite();
+
+       $favourite->product_id = $id;
+       $favourite->user_id = $user_id;
+
+       $favourite->save();
+        }
+       return $favourite;
+    }
+
+
 
     public function loadAjax()
     {

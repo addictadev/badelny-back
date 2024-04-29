@@ -235,12 +235,12 @@ class UserAPIController extends AppBaseController
             $user_id = \request()->user() ? \request()->user()->id : null;
             $user = $this->usersService->getInfo($user_id);
             $limit = \request('limit') ? \request('limit') : 20;
-            $categories = $this->categoryRepository->all();
-            $products = $this->productRepository->getHomeProducts($limit);
+           $category =\request('category_id') ? \request('category_id') : null;
+           $search =\request('search') ? \request('search') : null;
+            $products = $this->productRepository->getHomeProducts($limit,$category,$search);
             $response = array(
                 'data' => [
                     'user' => $user ? new UserResource($user) : null,
-                    'categories' => CategoryResource::collection($categories),
                     'products' => ProductResource::collection($products),
                 ],
             );

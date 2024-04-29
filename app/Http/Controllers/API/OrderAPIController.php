@@ -6,6 +6,7 @@ use App\Http\Requests\API\CreateOrderAPIRequest;
 use App\Http\Requests\API\UpdateOrderAPIRequest;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\RequestOffer;
 use App\Repositories\OrderRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -60,9 +61,11 @@ class OrderAPIController extends AppBaseController
         $input = $request->all();
 
        if (!$request->is_offer){
+
            $order = $this->orderRepository->create($input);
        }else{
-           $this->storeRequestOffers($input);
+
+           $order =  $this->storeRequestOffers($request->except('is_offer'));
        }
         return $this->sendResponse($order->toArray(), 'Order saved successfully');
         }catch (\Exception $e){
@@ -75,7 +78,59 @@ class OrderAPIController extends AppBaseController
      */
      public function storeRequestOffers($input)
      {
-         dd($input);
+         try {
+             // get user send offer
+         $auth_user = auth()->id();
+
+             // get user receive offer
+         if($auth_user == $input['from']){
+             $to =  $input['to'];
+         }else{
+             $to =  $input['from'];
+         }
+         //modify request data before saving
+           $input['from'] = $auth_user;
+           $input['to'] =$to;
+
+           // save request
+       return  $offer = $this->orderRepository->create($input);
+
+         }catch (\Exception $e){
+         }
+     }
+
+     public function changeStatus(Request $request)
+     {
+         // get the offer
+         $offer = RequestOffer::find($request->offer_id);
+         if (empty($offer)) {
+             return $this->sendError('offer not found');
+         }
+         // change status for offer
+         if ($request->status == 1){
+             $offer->update([
+                 'status' => 1
+             ]);
+
+             $input['from'] = $offer->request->from;
+             $input['to'] = $offer->request->to;
+             $input['buyer_product_id'] = $offer->buyer_product_id;
+             $input['seller_product_id']  = $offer->seller_product_id;
+             $input['points']  = $offer->points;
+             $input['request_id']  = $offer->request->id;
+             $input['exchange_type']  = $offer->exchange_type;
+             $input['status']  = 0;
+
+             //create final order
+             $order = $this->orderRepository->create($input);
+             return $this->sendResponse($order->toArray(), 'Order saved successfully');
+
+         }else{
+             $offer->update([
+                 'status' => 2
+             ]);
+             return $this->sendResponse($offer->toArray(), 'offer updated successfully');
+         }
      }
 
     /**

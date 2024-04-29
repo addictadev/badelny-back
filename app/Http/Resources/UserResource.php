@@ -22,9 +22,12 @@ class UserResource extends JsonResource
                 'email' => $this->email,
                 'phone' =>  $this->phone,
                 'birth date' => $this->date_of_birth,
+                'rate' => $this->date_of_birth,
+                'points' => $this->date_of_birth,
                 'gender' => $this->gender == 1 ? 'Male' : 'Female',
                 'Categories_interested' => CategoryResource::collection($this->interestCategories),
                 'created_at' => \Carbon\Carbon::parse($this->created_at),
+
 
             'links' => [
                 'self' => url()->current(),

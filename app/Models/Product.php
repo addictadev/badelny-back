@@ -65,5 +65,19 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(User::class,'user_id');
     }
 
+    public function scopeCategory($query,$category)
+    {
+        return $query->when($category, function () use ($query, $category) {
+            return $query->where('category_id', $category);
+        });
+    }
+
+        public function scopeSearch($query,$search)
+    {
+        $query->when($search,function ()use ($query,$search){
+            return $query->where('name', 'LIKE', '%' . $search . '%');
+        });
+    }
+
 
 }

@@ -56,7 +56,7 @@ abstract class BaseRepository
     {
         $query = $this->allQuery($search, $skip, $limit);
 
-        return $query->get($columns);
+        return $query->Category(request()->category_id)->get($columns);
     }
 
     public function allQuery($search = [], $skip = null, $limit = null)

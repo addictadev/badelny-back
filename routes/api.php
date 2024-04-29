@@ -55,16 +55,16 @@ Route::group(['middleware' => ['local_handler']] , function () {
 
             Route::post('/products/{id}', [App\Http\Controllers\API\ProductAPIController::class,'update'])->name('products.update');
             Route::get('/my-products' , 'ProductAPIController@index');
+            Route::post('/favourites/{id}' , 'ProductAPIController@productFavourite');
             // Interested categories
             Route::get('/my-interested-categories' , 'UserAPIController@myInterestedCategories');
             Route::post('/interested-categories' , 'UserAPIController@interestedCategories');
 
         });
     });
-    Route::group(['prefix' => 'orders'] , function () {
-//    Route::resource('orders', App\Http\Controllers\API\OrderAPIController::class)
-//        ->except(['create', 'edit']);
-    Route::post('/store/{type}' , 'OrderAPIController@store');
 
+    Route::group(['prefix' => 'orders'] , function () {
+    Route::post('/store/{type}' , 'OrderAPIController@store')->middleware('auth:api');
+    Route::post('/change-status' , 'OrderAPIController@changeStatus')->middleware('auth:api');
     });
 });

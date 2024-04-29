@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Favourite;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -14,7 +15,11 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
-
+        if(request()->user()){
+            $favourite = Favourite::where('product_id',$this->id)->where('user_id',\request()->user()->id)->first();
+        }else{
+            $favourite = false;
+        }
         return [
             'id' => $this->id ,
             'name' => $this->name ,
@@ -27,6 +32,7 @@ class ProductResource extends JsonResource
             'description' => $this->description ,
             'publish' => $this->status ,
             'approve_status' => $this->is_approve ,
+            'is_favourite' => $favourite,
             'created_at' => \Carbon\Carbon::parse($this->created_at) ,
             'links' => [
                 'self' => url()->current() ,

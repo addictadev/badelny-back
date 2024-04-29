@@ -39,5 +39,13 @@ class Category extends Model implements HasMedia
         return app()->getLocale() == 'ar' ? $this->name_ar : $this->name_en;
     }
 
+    public function scopeCategory($query,$category)
+    {
+        $query->when($category,function ()use ($query,$category){
+            return $query->where('parent_id',$category);
+        });
+    }
+
+
 
 }
