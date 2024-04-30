@@ -49,6 +49,7 @@ Route::group(['middleware' => ['local_handler']] , function () {
             Route::post('/change-password' , 'UserAPIController@changePassword');
             Route::get('/issues-types' , 'UserAPIController@issuesTypes');
             Route::post('/contact-us' , 'UserAPIController@contactUs');
+            Route::get('/favourites-products' , 'UserAPIController@getFavourites');
 
             Route::resource('users-addresses', App\Http\Controllers\API\UsersAddressesAPIController::class)->except('update');
             Route::post('users-addresses/{id}' , 'UsersAddressesAPIController@update');

@@ -14,7 +14,9 @@ class UsersAddresses extends Model
         'flat',
         'landmark',
         'phone',
-        'user_id'
+        'user_id',
+        'lat',
+        'lng',
     ];
 
     protected $casts = [

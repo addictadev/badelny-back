@@ -66,7 +66,14 @@ class ProductRepository extends BaseRepository
        return $favourite;
     }
 
+    public function getFavouriteProducts($user)
+    {
+        // get the favourite Products
+        $favourite = Favourite::where('user_id',$user)->pluck('product_id');
 
+        return Product::whereIn('id',$favourite)->get();
+
+    }
 
     public function loadAjax()
     {

@@ -29,6 +29,7 @@ class AreasAPIController extends AppBaseController
     public function index(Request $request): JsonResponse
     {
         try {
+
             $areas = $this->areasRepository->all(
                 $request->except(['skip', 'limit']),
                 $request->get('skip'),

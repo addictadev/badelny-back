@@ -24,6 +24,8 @@ class UserAddressesResource extends JsonResource
                 'flat' =>  $this->flat,
                 'landmark' => $this->landmark,
                 'phone' => $this->phone,
+                'lat' => $this->lat,
+                'lng' => $this->lng,
                 'created_at' => \Carbon\Carbon::parse($this->created_at)->format('Y-d-m')
         ];
     }

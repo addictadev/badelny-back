@@ -427,4 +427,21 @@ class UserAPIController extends AppBaseController
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
+    public function getFavourites()
+    {
+        try{
+            $user_id = \request()->user() ? \request()->user()->id : null;
+
+        $products = $this->productRepository->getFavouriteProducts($user_id);
+
+         $response = array(
+             'data' => ProductResource::collection($products),
+         );
+        return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
+
+            } catch (\Exception $e) {
+
+         return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
 }

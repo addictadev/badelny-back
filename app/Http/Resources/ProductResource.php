@@ -15,10 +15,10 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
+        $is_favourite = false;
         if(request()->user()){
             $favourite = Favourite::where('product_id',$this->id)->where('user_id',\request()->user()->id)->first();
-        }else{
-            $favourite = false;
+            $is_favourite = $favourite ? true : false;
         }
         return [
             'id' => $this->id ,
@@ -32,7 +32,7 @@ class ProductResource extends JsonResource
             'description' => $this->description ,
             'publish' => $this->status ,
             'approve_status' => $this->is_approve ,
-            'is_favourite' => $favourite,
+            'is_favourite' => $is_favourite,
             'created_at' => \Carbon\Carbon::parse($this->created_at) ,
             'links' => [
                 'self' => url()->current() ,

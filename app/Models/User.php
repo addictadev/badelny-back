@@ -24,6 +24,8 @@ class User extends Authenticatable implements HasMedia
         'gender',
         'password',
         'date_of_birth',
+        'rate',
+        'points',
     ];
 
     protected $appends = ['avatar'];
