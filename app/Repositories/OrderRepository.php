@@ -31,4 +31,15 @@ class OrderRepository extends BaseRepository
         }
         return Request::class;
     }
+
+    public function getRequest($user,$limit)
+    {
+        $offers = Request::where('status',0)->where('to',$user)->paginate($limit);
+        return $offers;
+    }
+
+    public function getRequestById($id)
+    {
+        return Request::find($id);
+    }
 }

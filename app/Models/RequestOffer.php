@@ -4,25 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class RequestOffer extends Model
 {
+    use  Notifiable;
     public $table = 'request_offers';
 
-    public $guarded =[];
+    public $fillable = [
+        'from',
+        'to',
+        'buyer_product_id',
+        'seller_product_id',
+        'points',
+        'status',
+        'request_id',
+    ];
 
     protected $casts = [
         'from' => 'integer',
         'request_id' => 'integer',
-        'bayer_product_id' => 'integer',
+        'buyer_product_id' => 'array',
         'points' => 'integer'
-    ];
-
-    public static array $rules = [
-        'from' => 'to integer text required',
-        'request_id' => 'exchange_type integer text',
-        'bayer_product_id' => 'seller_product_id integer text',
-        'points' => 'status integer text'
     ];
 
     public function request()

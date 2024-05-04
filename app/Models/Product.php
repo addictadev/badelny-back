@@ -24,7 +24,8 @@ class Product extends Model implements HasMedia
         'description',
         'status',
         'is_approve',
-        'user_id'
+        'user_id',
+        'exchange_categories'
     ];
 
     protected $appends = ['images', 'thumbnail'];
@@ -34,7 +35,8 @@ class Product extends Model implements HasMedia
         'wight' => 'string',
         'color' => 'string',
         'price' => 'string',
-        'points' => 'string'
+        'points' => 'string',
+        'exchange_categories' => 'array',
     ];
 
     public function getThumbnailAttribute()

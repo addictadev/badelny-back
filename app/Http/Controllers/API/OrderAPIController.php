@@ -4,14 +4,17 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\API\CreateOrderAPIRequest;
 use App\Http\Requests\API\UpdateOrderAPIRequest;
+use App\Http\Resources\NotificationResource;
+use App\Http\Resources\RequestResource;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\RequestOffer;
+use App\Models\User;
+use App\Notifications\RequestNotification;
 use App\Repositories\OrderRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class OrderAPIController
@@ -48,12 +51,29 @@ class OrderAPIController extends AppBaseController
     {
         // get the bayer id
         try {
+          // get the exchange type from seller product
+            $sellerProduct =  Product::where('id',$request->seller_product_id)->first();
 
-        $buyerProduct =  Product::where('id',$request->buyer_product_id)->first();
+            // get categories of buyer products
+            $categories = Product::whereIn('id', $request->buyer_product_id)->pluck('category_id')->toArray();
+
+            if ($sellerProduct->exchange_type !=1){
+                // check the buyer Product Categories == specific exchange Categories of seller
+                $differenceExchangeCategories = array_diff($categories, $sellerProduct->exchange_categories);
+            }
+
+           if ($differenceExchangeCategories != null){
+               return $this->sendError('These products cannot be Exchange with Seller Product ');
+           }
+
+           // get buyer id
+            foreach ($request->buyer_product_id as $product_id)
+            {
+                $buyerProduct =  Product::where('id',$product_id)->first();
+            }
+
         $buyerId =  $buyerProduct->user_id;
         // get the seller id
-        $sellerProduct =  Product::where('id',$request->seller_product_id)->first();
-
         $sellerId = $sellerProduct->user_id;
 
         // save the request of order
@@ -63,18 +83,22 @@ class OrderAPIController extends AppBaseController
        if (!$request->is_offer){
 
            $order = $this->orderRepository->create($input);
-       }else{
 
+           $resource = new NotificationResource($order);
+
+           User::find($sellerId)->notify(new RequestNotification($order));
+
+       }else{
            $order =  $this->storeRequestOffers($request->except('is_offer'));
        }
-        return $this->sendResponse($order->toArray(), 'Order saved successfully');
+        return $this->sendResponse($order->toArray(), 'request saved successfully');
         }catch (\Exception $e){
-            dd($e);
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
 
     /**
-     * Store Ofeers for Request Orders.
+     * Store Ofeers for RequestNotification Orders.
      */
      public function storeRequestOffers($input)
      {
@@ -96,6 +120,7 @@ class OrderAPIController extends AppBaseController
        return  $offer = $this->orderRepository->create($input);
 
          }catch (\Exception $e){
+             return $this->sendApiError(__('messages.something_went_wrong'), 500);
          }
      }
 
@@ -132,6 +157,27 @@ class OrderAPIController extends AppBaseController
              return $this->sendResponse($offer->toArray(), 'offer updated successfully');
          }
      }
+
+
+     public function getRequest()
+     {
+         $user_id = \request()->user() ? \request()->user()->id : null;
+         $limit = \request('limit') ? \request('limit') : 20;
+         $offers = $this->orderRepository->getRequest($user_id,$limit);
+
+         return  $this->sendApiResponse(array('data' => RequestResource::collection($offers)), 'Requests retrieved successfully');
+
+     }
+    public function getRequestById(string $id)
+    {
+        $request = $this->orderRepository->getRequestById($id);
+        if (empty($request)) {
+            return $this->sendApiError('Request not found', 404);
+        }
+        return  $this->sendApiResponse(array('data' => new RequestResource($request)), 'Requests retrieved successfully');
+
+    }
+
 
     /**
      * Update the specified Order in storage.

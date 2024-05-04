@@ -30,8 +30,6 @@ class CreateOrderAPIRequest extends APIRequest
         return [
             'seller_product_id' => 'required',
             'buyer_product_id' => 'required',
-            'exchange_type' => 'required',
-
         ];
     }
 

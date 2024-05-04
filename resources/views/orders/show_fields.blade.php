@@ -4,9 +4,9 @@
     <p>{{ $order->from }}</p>
 </div>
 
-<!-- Request Id Field -->
+<!-- RequestNotification Id Field -->
 <div class="col-sm-12">
-    {!! Form::label('request_id', 'Request Id:') !!}
+    {!! Form::label('request_id', 'RequestNotification Id:') !!}
     <p>{{ $order->request_id }}</p>
 </div>
 

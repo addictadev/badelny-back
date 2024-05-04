@@ -60,12 +60,15 @@ Route::group(['middleware' => ['local_handler']] , function () {
             // Interested categories
             Route::get('/my-interested-categories' , 'UserAPIController@myInterestedCategories');
             Route::post('/interested-categories' , 'UserAPIController@interestedCategories');
-
         });
     });
 
     Route::group(['prefix' => 'orders'] , function () {
     Route::post('/store/{type}' , 'OrderAPIController@store')->middleware('auth:api');
     Route::post('/change-status' , 'OrderAPIController@changeStatus')->middleware('auth:api');
+
+        // request list for notification
+        Route::get('/request' , 'OrderAPIController@getRequest')->middleware('auth:api');
+        Route::get('/request/{id}' , 'OrderAPIController@getRequestById')->middleware('auth:api');
     });
 });

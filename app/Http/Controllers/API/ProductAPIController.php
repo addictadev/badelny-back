@@ -157,9 +157,8 @@ class ProductAPIController extends AppBaseController
                 return $this->sendApiError('Product not found', 404);
             }
             $user_id = auth()->id();
-              $this->productRepository->productFavourite($id,$user_id);
-
-            return $this->sendApiResponse(array(), 'Product Favourite Synced successfully');
+               $this->productRepository->productFavourite($id,$user_id);
+            return $this->sendApiResponse(array('data' => new ProductResource($product)), 'Product Favourite Synced successfully');
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }

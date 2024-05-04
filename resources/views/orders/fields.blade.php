@@ -4,9 +4,9 @@
     {!! Form::text('from', null, ['class' => 'form-control']) !!}
 </div>
 
-<!-- Request Id Field -->
+<!-- RequestNotification Id Field -->
 <div class="form-group col-sm-6">
-    {!! Form::label('request_id', 'Request Id:') !!}
+    {!! Form::label('request_id', 'RequestNotification Id:') !!}
     {!! Form::text('request_id', null, ['class' => 'form-control']) !!}
 </div>
 

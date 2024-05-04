@@ -238,6 +238,7 @@ class UserAPIController extends AppBaseController
            $category =\request('category_id') ? \request('category_id') : null;
            $search =\request('search') ? \request('search') : null;
             $products = $this->productRepository->getHomeProducts($limit,$category,$search);
+
             $response = array(
                 'data' => [
                     'user' => $user ? new UserResource($user) : null,
@@ -247,6 +248,7 @@ class UserAPIController extends AppBaseController
 
             return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
         } catch (\Exception $e) {
+
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }

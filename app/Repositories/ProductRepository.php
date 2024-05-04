@@ -51,6 +51,7 @@ class ProductRepository extends BaseRepository
     {
         // check the product exit in favourite or not
         $favourite = Favourite::where('user_id',$user_id)->where('product_id',$id)->first();
+        $product = $this->getById($id);
 
         if ($favourite){
             $favourite->delete();
@@ -63,7 +64,7 @@ class ProductRepository extends BaseRepository
 
        $favourite->save();
         }
-       return $favourite;
+       return $product;
     }
 
     public function getFavouriteProducts($user)
