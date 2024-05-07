@@ -32,14 +32,24 @@ class OrderRepository extends BaseRepository
         return Request::class;
     }
 
-    public function getRequest($user,$limit)
+    public function getRequests($user,$limit)
     {
-        $offers = Request::where('status',0)->where('to',$user)->paginate($limit);
-        return $offers;
+        return Request::where('status',0)->where('to',$user)->paginate($limit);
     }
 
     public function getRequestById($id)
     {
         return Request::find($id);
     }
+
+    public function getOrders($user,$limit,$status)
+    {
+        if (!is_null($status)){
+            return Order::where('from',2)->where('status',$status)->paginate($limit);
+        }
+        return Order::where('from',0)->paginate($limit);
+    }
+
+
+
 }

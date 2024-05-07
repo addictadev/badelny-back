@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Requests\API\CreateOrderAPIRequest;
 use App\Http\Requests\API\UpdateOrderAPIRequest;
 use App\Http\Resources\NotificationResource;
+use App\Http\Resources\OrderResource;
 use App\Http\Resources\RequestResource;
 use App\Models\Order;
 use App\Models\Product;
@@ -157,17 +158,22 @@ class OrderAPIController extends AppBaseController
              return $this->sendResponse($offer->toArray(), 'offer updated successfully');
          }
      }
+    /**
+     * get all requests of auth user
+     */
 
-
-     public function getRequest()
+     public function getRequests()
      {
          $user_id = \request()->user() ? \request()->user()->id : null;
          $limit = \request('limit') ? \request('limit') : 20;
-         $offers = $this->orderRepository->getRequest($user_id,$limit);
+         $offers = $this->orderRepository->getRequests($user_id,$limit);
 
          return  $this->sendApiResponse(array('data' => RequestResource::collection($offers)), 'Requests retrieved successfully');
 
      }
+    /**
+     * get Request by id
+     */
     public function getRequestById(string $id)
     {
         $request = $this->orderRepository->getRequestById($id);
@@ -178,6 +184,20 @@ class OrderAPIController extends AppBaseController
 
     }
 
+    /**
+     * get all orders of auth user
+     * or filter by status
+     */
+    public function getOrders(Request $request)
+    {
+        $status = $request->status;
+        $user_id = \request()->user() ? \request()->user()->id : null;
+        $limit = \request('limit') ? \request('limit') : 20;
+        $offers = $this->orderRepository->getOrders($user_id,$limit,$status);
+
+        return  $this->sendApiResponse(array('data' => OrderResource::collection($offers)), 'Orders retrieved successfully');
+
+    }
 
     /**
      * Update the specified Order in storage.

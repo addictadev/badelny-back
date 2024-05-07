@@ -16,16 +16,19 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
-        $is_favourite = false;
-        $categories = null;
+
         if(request()->user()){
             $favourite = Favourite::where('product_id',$this->id)->where('user_id',\request()->user()->id)->first();
             $is_favourite = $favourite ? true : false ;
+        }else{
+        $is_favourite = false;
         }
 
-        if (!empty($this->exchange_categories)) {
-            $categories = Category::WhereIn('id' , $this->exchange_categories)->get();
-        }
+       if(!empty($this->exchange_categories)){
+              $categories = Category::WhereIn('id',$this->exchange_categories)->get();
+            }else{
+                $categories = null;
+            }
 
         return [
             'id' => $this->id ,
@@ -40,7 +43,7 @@ class ProductResource extends JsonResource
             'publish' => $this->status ,
             'approve_status' => $this->is_approve ,
             'exchange_options' => $this->exchange_options == 1 ? 'All categories' : 'Specific Categories',
-            'exchange_categories' => CategoryResource::collection($categories),
+            'exchange_categories' =>!is_null($categories) ? CategoryResource::collection($categories) : [],
             'is_favourite' => $is_favourite,
             'created_at' => \Carbon\Carbon::parse($this->created_at) ,
             'links' => [
