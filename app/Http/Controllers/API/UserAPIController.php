@@ -5,13 +5,18 @@ namespace App\Http\Controllers\API;
 use App\Http\Requests\API\ContactUsAPIRequest;
 use App\Http\Requests\API\CreateUserAPIRequest;
 use App\Http\Requests\API\LoginAPIRequest;
+use App\Http\Requests\API\ReviewAPIRequest;
 use App\Http\Requests\API\UpdatePasswordAPIRequest;
 use App\Http\Requests\API\UpdateUserAPIRequest;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductReviewResource;
+use App\Http\Resources\SellerReviewResource;
 use App\Http\Resources\UserResource;
-use App\Models\Category;
 use App\Models\ContactUs;
+use App\Models\Product;
+use App\Models\ProductReview;
+use App\Models\SellerReview;
 use App\Models\TermsConditions;
 use App\Models\User;
 use App\Repositories\CategoryRepository;
@@ -444,6 +449,69 @@ class UserAPIController extends AppBaseController
             } catch (\Exception $e) {
 
          return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function storeReview(ReviewAPIRequest $request)
+    {
+        try {
+
+
+            // save product review
+            $productReview = new ProductReview();
+            $productReview->user_id = $request->user_id;
+            $productReview->product_id = $request->product_id;
+            $productReview->rate = $request->product_rate;
+            $productReview->save();
+
+            // get the product review avg
+
+            $avgProduct = ProductReview::query()->where('product_id', $request->product_id)->avg('rate');
+            $productAvg = number_format((float)$avgProduct, 1, '.', '');
+            // update product column with new rate
+            Product::where('id',$request->product_id)->update([
+                'rate' => $productAvg
+            ]);
+
+            // save seller review
+            $sellerReview = new SellerReview();
+            $sellerReview->user_id = $request->user_id;
+            $sellerReview->seller_id = $request->seller_id;
+            $sellerReview->rate = $request->seller_rate;
+            $sellerReview->save();
+
+            // get the seller review avg
+
+            $avgSeller = SellerReview::query()->where('seller_id', $request->seller_id)->avg('rate');
+            $sellerAvg = number_format((float)$avgSeller, 1, '.', '');
+            // update seller column with new rate
+            User::where('id',$request->seller_id)->update([
+                'rate' => $sellerAvg
+            ]);
+
+            return $this->sendApiResponse(array(), 'Review saved successfully');
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+    public function getProductReview($id)
+    {
+        try {
+            $productReview = ProductReview::where('product_id',$id)->get();
+
+            return $this->sendApiResponse(array('data' => ProductReviewResource::collection($productReview)), __('messages.retrieved_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function getSellerReview($id)
+    {
+        try {
+            $sellerReview = SellerReview::where('seller_id',$id)->get();
+            return $this->sendApiResponse(array('data' => SellerReviewResource::collection($sellerReview)), __('messages.retrieved_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
 }

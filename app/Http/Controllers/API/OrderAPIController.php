@@ -52,47 +52,53 @@ class OrderAPIController extends AppBaseController
     {
         // get the bayer id
         try {
-          // get the exchange type from seller product
+            // get the exchange type from seller product
             $sellerProduct =  Product::where('id',$request->seller_product_id)->first();
 
             // get categories of buyer products
             $categories = Product::whereIn('id', $request->buyer_product_id)->pluck('category_id')->toArray();
 
-            if ($sellerProduct->exchange_type !=1){
-                // check the buyer Product Categories == specific exchange Categories of seller
+
+//            if ($sellerProduct->exchange_type != 1){
+//                // check the buyer Product Categories == specific exchange Categories of seller
+//                if ($sellerProduct->exchange_categories) {
+//                    $differenceExchangeCategories = array_diff($categories, $sellerProduct->exchange_categories);
+//                }
+//            }
+
+            if (!empty($sellerProduct->exchange_categories)) {
                 $differenceExchangeCategories = array_diff($categories, $sellerProduct->exchange_categories);
+                if ($differenceExchangeCategories != null){
+                    return $this->sendError('These products cannot be Exchange with Seller Product ');
+                }
             }
 
-           if ($differenceExchangeCategories != null){
-               return $this->sendError('These products cannot be Exchange with Seller Product ');
-           }
-
-           // get buyer id
+            // get buyer id
             foreach ($request->buyer_product_id as $product_id)
             {
                 $buyerProduct =  Product::where('id',$product_id)->first();
             }
 
-        $buyerId =  $buyerProduct->user_id;
-        // get the seller id
-        $sellerId = $sellerProduct->user_id;
+            $buyerId =  $buyerProduct->user_id;
+            // get the seller id
+            $sellerId = $sellerProduct->user_id;
 
-        // save the request of order
-        $request->merge(['from' => $buyerId ,'to' =>$sellerId]);
-        $input = $request->all();
+            // save the request of order
+            $request->merge(['from' => $buyerId ,'to' =>$sellerId]);
+            $input = $request->all();
 
-       if (!$request->is_offer){
+            if (!$request->is_offer){
 
-           $order = $this->orderRepository->create($input);
+                $order = $this->orderRepository->create($input);
 
-           $resource = new NotificationResource($order);
+                $resource = new NotificationResource($order);
 
-           User::find($sellerId)->notify(new RequestNotification($order));
+                User::find($sellerId)->notify(new RequestNotification($order));
 
-       }else{
-           $order =  $this->storeRequestOffers($request->except('is_offer'));
-       }
-        return $this->sendResponse($order->toArray(), 'request saved successfully');
+            }else{
+                $order =  $this->storeRequestOffers($request->except('is_offer'));
+            }
+            return $this->sendResponse($order->toArray(), 'request saved successfully');
         }catch (\Exception $e){
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }

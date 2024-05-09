@@ -45,9 +45,9 @@ class OrderRepository extends BaseRepository
     public function getOrders($user,$limit,$status)
     {
         if (!is_null($status)){
-            return Order::where('from',2)->where('status',$status)->paginate($limit);
+            return Order::where('from',$user)->where('status',$status)->paginate($limit);
         }
-        return Order::where('from',0)->paginate($limit);
+        return Order::where('from',$user)->paginate($limit);
     }
 
 

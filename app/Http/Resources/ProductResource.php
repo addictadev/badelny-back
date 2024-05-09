@@ -45,6 +45,7 @@ class ProductResource extends JsonResource
             'exchange_options' => $this->exchange_options == 1 ? 'All categories' : 'Specific Categories',
             'exchange_categories' =>!is_null($categories) ? CategoryResource::collection($categories) : [],
             'is_favourite' => $is_favourite,
+            'rate' => $this->rate,
             'created_at' => \Carbon\Carbon::parse($this->created_at) ,
             'links' => [
                 'self' => url()->current() ,

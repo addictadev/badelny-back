@@ -63,7 +63,7 @@ Route::group(['middleware' => ['local_handler']] , function () {
         });
     });
 
-    Route::group(['prefix' => 'orders'] , function () {
+    Route::group(['prefix' => 'orders' , 'middleware' => 'auth:api'] , function () {
     Route::post('/store/{type}' , 'OrderAPIController@store')->middleware('auth:api');
     Route::post('/change-status' , 'OrderAPIController@changeStatus')->middleware('auth:api');
 
@@ -73,5 +73,12 @@ Route::group(['middleware' => ['local_handler']] , function () {
 
         // for list order
         Route::get('/' , 'OrderAPIController@getOrders')->middleware('auth:api');
+
+    });
+    // for reviews
+    Route::group(['prefix' => 'reviews'] , function () {
+    Route::post('/' , 'UserAPIController@storeReview')->middleware('auth:api');
+    Route::get('/product/{id}' , 'UserAPIController@getProductReview');
+    Route::get('/seller/{id}' , 'UserAPIController@getSellerReview');
     });
 });

@@ -25,7 +25,8 @@ class Product extends Model implements HasMedia
         'status',
         'is_approve',
         'user_id',
-        'exchange_categories'
+        'exchange_categories',
+        'rate'
     ];
 
     protected $appends = ['images', 'thumbnail'];

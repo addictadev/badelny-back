@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Requests\API\CreateProductAPIRequest;
+
 use App\Http\Requests\API\UpdateProductAPIRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+
 use App\Repositories\ProductRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -163,5 +165,9 @@ class ProductAPIController extends AppBaseController
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
+
+
+
+
 
 }
