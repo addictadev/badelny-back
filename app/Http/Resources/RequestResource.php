@@ -28,17 +28,33 @@ class RequestResource extends JsonResource
         }else{
             $status = 'refused';
         }
+        $user_offer = $buyerProducts->pluck('points')->sum();
+        // get total and what seller earn ?
+
+        if (!is_null($this->points))
+            // if user send points in request
+        {
+            $total = $this->points - $user_offer;
+        }else
+        {
+            $total =$sellerProduct->points - $user_offer;
+        }
         return [
 
             'id' => $this->id,
             'seller Product' => new ProductResource($sellerProduct),
             'buyer Products' =>  ProductResource::collection($buyerProducts),
             'points' => $this->points,
-            'from' => new UserResource($userFrom),
-            'to' => new UserResource($userTo),
+            'from' => new UserRequestResource($userFrom),
+            'to' => new UserRequestResource($userTo),
+            'my_offer' =>$sellerProduct->points,
+            'my_nag_offer' =>$this->points,
+            'user_offer' => $user_offer,
+            'total' => $total,
             'status' => $status,
             'created_at' => \Carbon\Carbon::parse($this->created_at)->format('Y-d-m'),
-            'offers' => RequestOfferResource::collection($this->offers),
+            'offers_for_request' => RequestOfferResource::collection($this->offers),
+
         ];
     }
 }

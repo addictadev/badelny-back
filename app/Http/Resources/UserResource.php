@@ -28,7 +28,6 @@ class UserResource extends JsonResource
                 'Categories_interested' => CategoryResource::collection($this->interestCategories),
                 'created_at' => \Carbon\Carbon::parse($this->created_at),
 
-
             'links' => [
                 'self' => url()->current(),
             ],

@@ -466,7 +466,7 @@ class UserAPIController extends AppBaseController
 
             // get the product review avg
 
-            $avgProduct = ProductReview::query()->where('product_id', $request->product_id)->avg('rate');
+            $avgProduct = ProductReview::where('product_id',$request->product_id)->avg('rate');
             $productAvg = number_format((float)$avgProduct, 1, '.', '');
             // update product column with new rate
             Product::where('id',$request->product_id)->update([
@@ -482,7 +482,7 @@ class UserAPIController extends AppBaseController
 
             // get the seller review avg
 
-            $avgSeller = SellerReview::query()->where('seller_id', $request->seller_id)->avg('rate');
+            $avgSeller = SellerReview::where('seller_id',$request->seller_id)->avg('rate');
             $sellerAvg = number_format((float)$avgSeller, 1, '.', '');
             // update seller column with new rate
             User::where('id',$request->seller_id)->update([
