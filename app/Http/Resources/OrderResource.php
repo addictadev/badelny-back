@@ -24,8 +24,10 @@ class OrderResource extends JsonResource
 
        if ($this->status == 0){
            $status = 'pending';
+           $color = '#FFD700';
        }elseif($this->status == 1){
            $status = 'processing';
+           $color =
        }elseif($this->status == 2){
            $status = 'on the way';
        }else{
@@ -44,20 +46,12 @@ class OrderResource extends JsonResource
             $total =$sellerProduct->points - $user_offer;
         }
         return [
-
             'id' => $this->id,
-            'seller Product' => new ProductRequestResource($sellerProduct),
-            'buyer Products' =>  ProductRequestResource::collection($buyerProducts),
+            'buyer_Products'=> ProductRequestResource::collection($buyerProducts),
             'points' => $this->points,
             'from' => new UserRequestResource($userFrom),
-            'to' => new UserRequestResource($userTo),
-            'my_offer' =>$sellerProduct->points,
-            'my_nag_offer' =>$this->points,
-            'user_offer' => $user_offer,
-            'total' => $total,
-            'status' => $status,
+            'status' => $this->status,
             'created_at' => \Carbon\Carbon::parse($this->created_at)->format('Y-d-m'),
-            'offers_for_request' => RequestOfferResource::collection($this->offers),
         ];
     }
 }

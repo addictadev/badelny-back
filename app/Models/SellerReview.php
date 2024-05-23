@@ -15,5 +15,6 @@ class SellerReview extends Model
         'user_id',
         'seller_id',
         'rate',
+        'notes',
     ];
 }

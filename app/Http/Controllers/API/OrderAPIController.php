@@ -165,7 +165,7 @@ class OrderAPIController extends AppBaseController
          }
      }
     /**
-     * get all requests of auth user
+     * get all requests of auth usergetRequests
      */
 
      public function getRequests()
@@ -174,7 +174,7 @@ class OrderAPIController extends AppBaseController
          $limit = \request('limit') ? \request('limit') : 20;
          $offers = $this->orderRepository->getRequests($user_id,$limit);
 
-         return  $this->sendApiResponse(array('data' => RequestResource::collection($offers)), 'Requests retrieved successfully');
+         return  $this->sendApiResponse(array('data' => ['requests' =>  RequestResource::collection($offers), 'resent' => []]), 'Requests retrieved successfully');
 
      }
     /**

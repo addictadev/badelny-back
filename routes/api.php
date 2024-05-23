@@ -81,4 +81,7 @@ Route::group(['middleware' => ['local_handler']] , function () {
     Route::get('/product/{id}' , 'UserAPIController@getProductReview');
     Route::get('/seller/{id}' , 'UserAPIController@getSellerReview');
     });
+    Route::group(['prefix' => 'sellers'] , function () {
+    Route::get('get/info/{id}' , 'UserAPIController@getSellerInfo');
+    });
 });

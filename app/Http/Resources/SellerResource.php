@@ -3,10 +3,12 @@
 namespace App\Http\Resources;
 
 use App\Models\Product;
+use App\Models\SellerReview;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
+use function Symfony\Component\Routing\Loader\Configurator\collection;
 
-class ProductReviewResource extends JsonResource
+class SellerResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,18 +16,15 @@ class ProductReviewResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-
     public function toArray($request)
     {
-        $user = User::find($this->user_id);
-        $product = Product::find($this->product_id);
+        $posts = Product::where('user_id',$this->id)->get();
+
+        $reviews = SellerReview::where('seller_id',$this->id)->get();
+
         return [
-                'id' => $this->id,
-                'user' => new UserResource($user),
-                'product' => new ProductResource($product),
-                'rate' => $this->rate,
-                'notes' => $this->notes,
-                'created_at' => \Carbon\Carbon::parse($this->created_at),
+            'posts' =>  ProductResource::collection($posts),
+            'reviews' => SellerReviewResource::collection($reviews),
             'links' => [
                 'self' => url()->current(),
             ],

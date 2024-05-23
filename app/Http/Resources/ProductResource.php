@@ -16,9 +16,10 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
-
         if(request()->user()){
+
             $favourite = Favourite::where('product_id',$this->id)->where('user_id',\request()->user()->id)->first();
+
             $is_favourite = $favourite ? true : false ;
         }else{
         $is_favourite = false;

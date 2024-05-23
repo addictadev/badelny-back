@@ -11,6 +11,7 @@ use App\Http\Requests\API\UpdateUserAPIRequest;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductReviewResource;
+use App\Http\Resources\SellerResource;
 use App\Http\Resources\SellerReviewResource;
 use App\Http\Resources\UserResource;
 use App\Models\ContactUs;
@@ -156,11 +157,11 @@ class UserAPIController extends AppBaseController
         try {
             $fullMobileNumber = $request->calling_code . $request->phone;
             $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-            $phoneNumber = $phoneUtil->parse($fullMobileNumber , null , null , true);
+            $phoneNumber = $phoneUtil->parse($fullMobileNumber, null, null, true);
             $isValid = $phoneUtil->isValidNumber($phoneNumber);
             $phoneNumberFormated = $phoneUtil->format($phoneNumber, \libphonenumber\PhoneNumberFormat::E164);
             if (!$isValid) {
-                return $this->sendApiError(__('auth.phoneNotValid') , 500);
+                return $this->sendApiError(__('auth.phoneNotValid'), 500);
             }
             $mobileVerify = $this->mobileVerificationsRepository->findByPhoneVerify($phoneNumberFormated);
             if (!$mobileVerify) {
@@ -240,9 +241,9 @@ class UserAPIController extends AppBaseController
             $user_id = \request()->user() ? \request()->user()->id : null;
             $user = $this->usersService->getInfo($user_id);
             $limit = \request('limit') ? \request('limit') : 20;
-           $category =\request('category_id') ? \request('category_id') : null;
-           $search =\request('search') ? \request('search') : null;
-            $products = $this->productRepository->getHomeProducts($limit,$category,$search);
+            $category = \request('category_id') ? \request('category_id') : null;
+            $search = \request('search') ? \request('search') : null;
+            $products = $this->productRepository->getHomeProducts($limit, $category, $search);
 
             $response = array(
                 'data' => [
@@ -273,7 +274,7 @@ class UserAPIController extends AppBaseController
             $rules['email'] = $rules['email'] . ',id,' . $user->id;
             $validator = Validator::make($input, $rules);
             if ($validator->fails()) {
-                $errorString = implode(", ",$validator->messages()->all());
+                $errorString = implode(", ", $validator->messages()->all());
                 return $this->sendApiError($errorString, 422);
             }
 
@@ -303,7 +304,7 @@ class UserAPIController extends AppBaseController
                 return $this->sendApiError(__('passwords.incorrect_password'), 422);
             }
 
-            $this->usersService->update(["password" => bcrypt($request->password)],$user->id);
+            $this->usersService->update(["password" => bcrypt($request->password)], $user->id);
             return $this->sendApiResponse(array(), __('messages.update_successfully'));
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
@@ -394,7 +395,7 @@ class UserAPIController extends AppBaseController
                 'message' => $request->message,
             ]);
 
-            if($request->hasFile('images')){
+            if ($request->hasFile('images')) {
                 $contactUs->addMultipleMediaFromRequest(['images'])
                     ->each(function ($contactUs) {
                         $contactUs->toMediaCollection('contact_images');
@@ -434,21 +435,22 @@ class UserAPIController extends AppBaseController
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
+
     public function getFavourites()
     {
-        try{
+        try {
             $user_id = \request()->user() ? \request()->user()->id : null;
 
-        $products = $this->productRepository->getFavouriteProducts($user_id);
+            $products = $this->productRepository->getFavouriteProducts($user_id);
 
-         $response = array(
-             'data' => ProductResource::collection($products),
-         );
-        return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
+            $response = array(
+                'data' => ProductResource::collection($products),
+            );
+            return $this->sendApiResponse($response, __('messages.retrieved_successfully'));
 
-            } catch (\Exception $e) {
+        } catch (\Exception $e) {
 
-         return $this->sendApiError(__('messages.something_went_wrong'), 500);
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
 
@@ -456,20 +458,20 @@ class UserAPIController extends AppBaseController
     {
         try {
 
-
             // save product review
             $productReview = new ProductReview();
             $productReview->user_id = $request->user_id;
             $productReview->product_id = $request->product_id;
             $productReview->rate = $request->product_rate;
+            $productReview->notes = $request->product_notes;
             $productReview->save();
 
             // get the product review avg
 
-            $avgProduct = ProductReview::where('product_id',$request->product_id)->avg('rate');
+            $avgProduct = ProductReview::where('product_id', $request->product_id)->avg('rate');
             $productAvg = number_format((float)$avgProduct, 1, '.', '');
             // update product column with new rate
-            Product::where('id',$request->product_id)->update([
+            Product::where('id', $request->product_id)->update([
                 'rate' => $productAvg
             ]);
 
@@ -478,14 +480,15 @@ class UserAPIController extends AppBaseController
             $sellerReview->user_id = $request->user_id;
             $sellerReview->seller_id = $request->seller_id;
             $sellerReview->rate = $request->seller_rate;
+            $sellerReview->notes = $request->seller_notes;
             $sellerReview->save();
 
             // get the seller review avg
 
-            $avgSeller = SellerReview::where('seller_id',$request->seller_id)->avg('rate');
+            $avgSeller = SellerReview::where('seller_id', $request->seller_id)->avg('rate');
             $sellerAvg = number_format((float)$avgSeller, 1, '.', '');
             // update seller column with new rate
-            User::where('id',$request->seller_id)->update([
+            User::where('id', $request->seller_id)->update([
                 'rate' => $sellerAvg
             ]);
 
@@ -494,10 +497,11 @@ class UserAPIController extends AppBaseController
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }
     }
+
     public function getProductReview($id)
     {
         try {
-            $productReview = ProductReview::where('product_id',$id)->get();
+            $productReview = ProductReview::where('product_id', $id)->get();
 
             return $this->sendApiResponse(array('data' => ProductReviewResource::collection($productReview)), __('messages.retrieved_successfully'));
         } catch (\Exception $e) {
@@ -508,8 +512,22 @@ class UserAPIController extends AppBaseController
     public function getSellerReview($id)
     {
         try {
-            $sellerReview = SellerReview::where('seller_id',$id)->get();
+            $sellerReview = SellerReview::where('seller_id', $id)->get();
             return $this->sendApiResponse(array('data' => SellerReviewResource::collection($sellerReview)), __('messages.retrieved_successfully'));
+        } catch (\Exception $e) {
+            return $this->sendApiError(__('messages.something_went_wrong'), 500);
+        }
+    }
+
+    public function getSellerInfo($id)
+    {
+        try {
+            $seller = User::find($id);
+
+            if (empty($seller)) {
+                return $this->sendApiError(__('passwords.user'), 404);
+            }
+            return $this->sendApiResponse(array('data' =>new SellerResource($seller)), __('messages.retrieved_successfully'));
         } catch (\Exception $e) {
             return $this->sendApiError(__('messages.something_went_wrong'), 500);
         }

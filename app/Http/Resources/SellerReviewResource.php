@@ -24,6 +24,7 @@ class SellerReviewResource extends JsonResource
             'user' => new UserResource($user),
             'seller' => new UserResource($seller),
             'rate' => $this->rate,
+            'notes' => $this->notes,
             'created_at' => \Carbon\Carbon::parse($this->created_at),
             'links' => [
                 'self' => url()->current(),
