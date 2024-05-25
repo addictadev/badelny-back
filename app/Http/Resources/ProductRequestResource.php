@@ -32,7 +32,7 @@ class ProductRequestResource extends JsonResource
         return [
             'id' => $this->id ,
             'name' => $this->name ,
-            'user' => $this->user ? $this->user : '',
+            'user' => $this->user ? new UserRequestResource($this->user) : '',
             'category' => $this->category ? $this->category : '' ,
             'thumbnail' => $this->thumbnail,
             'price' => $this->price ,
