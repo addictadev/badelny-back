@@ -151,10 +151,15 @@ class OrderAPIController extends AppBaseController
              $input['points']  = $offer->points;
              $input['request_id']  = $offer->request->id;
              $input['exchange_type']  = $offer->exchange_type;
-             $input['status']  = 0;
+             $input['status']  = Order::STATUS_PENDING;
 
              //create final order
              $order = $this->orderRepository->create($input);
+             if ($order){
+                 $order->OrderStatusHistory()->create([
+                    'status' => $order->status
+                 ]);
+             }
              return $this->sendResponse($order->toArray(), 'Order saved successfully');
 
          }else{

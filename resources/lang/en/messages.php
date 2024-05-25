@@ -26,4 +26,8 @@ return [
     'Mobile_Not_Verify' => 'Mobile number not verify.',
     'Mobile_Not_Valid' => 'Mobile number not valid.',
     'Code_Not_Valid' => 'Invalid verification code.',
+    'STATUS_PENDING' => 'Pending',
+    'STATUS_PROCESSING' => 'In progress',
+    'STATUS_ON_THE_WAY' => 'On The Way',
+    'STATUS_DELIVERED' => 'Delivered',
 ];

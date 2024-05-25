@@ -26,4 +26,8 @@ return [
     'Mobile_Not_Verify' => 'يرجى تأكيد رقم الجوال.',
     'Mobile_Not_Valid' => 'رقم الجوال غير صحيح.',
     'Code_Not_Valid' => 'كود التأكيد غير صحيح.',
+    'STATUS_PENDING' => 'تم الطلب',
+    'STATUS_PROCESSING' => 'جارى العمل عليها',
+    'STATUS_ON_THE_WAY' => 'فى الطريق',
+    'STATUS_DELIVERED' => 'تم التوصيل',
 ];

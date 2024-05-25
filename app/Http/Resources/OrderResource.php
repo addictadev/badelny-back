@@ -17,41 +17,28 @@ class OrderResource extends JsonResource
 
     public function toArray($request)
     {
-        $sellerProduct = Product::find($this->seller_product_id);
         $buyerProducts = Product::WhereIn('id',$this->buyer_product_id)->get();
         $userFrom = User::find($this->from);
-        $userTo = User::find($this->to);
 
-       if ($this->status == 0){
-           $status = 'pending';
-           $color = '#FFD700';
-       }elseif($this->status == 1){
-           $status = 'processing';
-           $color =
-       }elseif($this->status == 2){
-           $status = 'on the way';
-       }else{
-           $status = 'delivered';
-       }
-
-        $user_offer = $buyerProducts->pluck('points')->sum();
-        // get total and what seller earn ?
-
-        if (!is_null($this->points))
-            // if user send points in request
-        {
-            $total = $this->points - $user_offer;
-        }else
-        {
-            $total =$sellerProduct->points - $user_offer;
-        }
         return [
             'id' => $this->id,
             'buyer_Products'=> ProductRequestResource::collection($buyerProducts),
             'points' => $this->points,
             'from' => new UserRequestResource($userFrom),
-            'status' => $this->status,
+            'status' => $this->getStatusObject($this->status),
             'created_at' => \Carbon\Carbon::parse($this->created_at)->format('Y-d-m'),
+        ];
+    }
+
+
+    private function getStatusObject($status)
+    {
+        $colors = ['#0CB450', '#FFC100', '#dd4b39', '#dd4b39'];
+        $texts = [trans('messages.STATUS_PENDING') , trans('messages.STATUS_PROCESSING'), trans('messages.STATUS_ON_THE_WAY'), trans('messages.STATUS_DELIVERED')];
+        return [
+            'color' => $colors[$status],
+            'text' => $texts[$status],
+            'value' => $status,
         ];
     }
 }

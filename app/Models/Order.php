@@ -24,6 +24,12 @@ class Order extends Model
         return $this->fillable;
     }
 
+    /* status */
+    const STATUS_PENDING                      = 0;
+    const STATUS_PROCESSING                   = 1;
+    const STATUS_ON_THE_WAY                   = 2;
+    const STATUS_DELIVERED                    = 3;
+
     protected $casts = [
         'from' => 'integer',
         'request_id' => 'integer',
@@ -39,6 +45,11 @@ class Order extends Model
     public function request()
     {
         return $this->belongsTo(Request::class,'request_id');
+    }
+
+    public function OrderStatusHistory()
+    {
+        return $this->hasMany(OrderStatusHistory::class,'order_id');
     }
 
 }
