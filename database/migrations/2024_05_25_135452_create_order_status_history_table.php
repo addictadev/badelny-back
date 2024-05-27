@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->nullable()->constrained('orders')->onDelete('cascade');
             $table->tinyInteger('status')->default(0);
-            $table->string('color');
+            $table->string('color')->nullable();
             $table->timestamps();
         });
     }

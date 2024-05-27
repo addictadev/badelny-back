@@ -157,7 +157,8 @@ class OrderAPIController extends AppBaseController
              $order = $this->orderRepository->create($input);
              if ($order){
                  $order->OrderStatusHistory()->create([
-                    'status' => $order->status
+                     'status' => $order->status,
+                     'color' => '#0CB450'
                  ]);
              }
              return $this->sendResponse($order->toArray(), 'Order saved successfully');
