@@ -67,6 +67,7 @@ Route::group(['middleware' => ['local_handler']] , function () {
     Route::post('/store/{type}' , 'OrderAPIController@store')->middleware('auth:api');
     Route::post('/change-status' , 'OrderAPIController@changeStatus')->middleware('auth:api');
 
+        Route::post('/change-order-status/{id}' , 'OrderAPIController@changeOrderStatus');
         // request list for notification
         Route::get('/request' , 'OrderAPIController@getRequests')->middleware('auth:api');
         Route::get('/request/{id}' , 'OrderAPIController@getRequestById')->middleware('auth:api');

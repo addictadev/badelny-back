@@ -231,6 +231,18 @@ class OrderAPIController extends AppBaseController
         return $this->sendResponse($order->toArray(), 'Order updated successfully');
     }
 
+    public function changeOrderStatus($id, Request $request)
+    {
+        /** @var Order $order */
+        $order = $this->orderRepository->find($id);
+        if (empty($order)) {
+            return $this->sendApiError('Request not found', 404);
+        }
+
+        $this->orderRepository->update(['status' => $request->status], $id);
+        return  $this->sendApiResponse(array(), 'Orders retrieved successfully');
+    }
+
     /**
      * Remove the specified Order from storage.
      * DELETE /orders/{id}
