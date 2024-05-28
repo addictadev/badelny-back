@@ -235,11 +235,11 @@ class OrderAPIController extends AppBaseController
     {
         /** @var Order $order */
         $order = $this->orderRepository->getByID($id);
-        if (empty($order)) {
+        if (!$order) {
             return $this->sendApiError('order not found', 404);
         }
 
-        $this->orderRepository->update(['status' => $request->status], $id);
+        $order->update(['status' => $request->status]);
         return  $this->sendApiResponse(array(), 'Orders retrieved successfully');
     }
 
