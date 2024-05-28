@@ -234,9 +234,9 @@ class OrderAPIController extends AppBaseController
     public function changeOrderStatus($id, Request $request)
     {
         /** @var Order $order */
-        $order = $this->orderRepository->find($id);
+        $order = $this->orderRepository->getByID($id);
         if (empty($order)) {
-            return $this->sendApiError('Request not found', 404);
+            return $this->sendApiError('order not found', 404);
         }
 
         $this->orderRepository->update(['status' => $request->status], $id);

@@ -42,6 +42,10 @@ class OrderRepository extends BaseRepository
         return Request::find($id);
     }
 
+    public function getByID($id)
+    {
+        return Order::query()->where('id', $id)->first();
+    }
     public function getOrders($user,$limit,$status)
     {
         if (!is_null($status)){
